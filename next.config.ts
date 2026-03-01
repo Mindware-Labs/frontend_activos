@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    // Avoid Turbopack persistent cache corruption on Windows/OneDrive paths.
+    turbopackFileSystemCacheForDev: false,
+  },
 };
 
 export default nextConfig;
