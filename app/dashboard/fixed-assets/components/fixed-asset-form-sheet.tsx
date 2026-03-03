@@ -59,18 +59,7 @@ export function FixedAssetFormSheet({
       <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-[440px] border-l-0 sm:border-l shadow-2xl">
         <SheetHeader className="relative overflow-hidden border-b bg-gradient-to-br from-emerald-500/10 via-background to-background px-5 py-5 text-left z-10">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-10 -mt-10" />
-          <div className="relative mb-2 flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className={cn(
-                "px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400",
-                !isEditMode &&
-                  "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400",
-              )}
-            >
-              {isEditMode ? "Modo Edición" : "Nuevo Registro"}
-            </Badge>
-          </div>
+   
           <SheetTitle className="text-xl font-bold tracking-tight">
             {isEditMode ? "Editar Activo Fijo" : "Registrar Activo Fijo"}
           </SheetTitle>
@@ -100,7 +89,7 @@ export function FixedAssetFormSheet({
                   id="asset-name"
                   value={form.name}
                   onChange={(e) => onFormFieldChange("name", e.target.value)}
-                  placeholder="Ej. Computadora HP"
+                  placeholder="Activo fijo..."
                   className="h-9 text-sm"
                   required
                 />
@@ -114,7 +103,7 @@ export function FixedAssetFormSheet({
                   id="asset-desc"
                   value={form.description}
                   onChange={(e) => onFormFieldChange("description", e.target.value)}
-                  placeholder="Opcional"
+                  placeholder="10 caracteres min"
                   className="h-9 text-sm"
                 />
               </div>
@@ -146,7 +135,7 @@ export function FixedAssetFormSheet({
                     id="asset-purchase"
                     type="number"
                     min="0"
-                    step="0.01"
+                    step="100"
                     value={form.purchaseValue}
                     onChange={(e) => onFormFieldChange("purchaseValue", e.target.value)}
                     className="h-9 text-sm"
@@ -164,7 +153,7 @@ export function FixedAssetFormSheet({
                     id="asset-residual"
                     type="number"
                     min="0"
-                    step="0.01"
+                    step="100"
                     value={form.residualValue}
                     onChange={(e) => onFormFieldChange("residualValue", e.target.value)}
                     className="h-9 text-sm"
@@ -226,7 +215,7 @@ export function FixedAssetFormSheet({
                       <SelectValue placeholder="Selecciona..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {assetTypes.map((type) => (
+                      {assetTypes.filter((type) => type.status === true).map((type) => (
                         <SelectItem key={type.id} value={String(type.id)}>
                           {type.name}
                         </SelectItem>

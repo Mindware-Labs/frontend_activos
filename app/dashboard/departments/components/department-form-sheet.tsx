@@ -92,7 +92,7 @@ export function DepartmentFormSheet({
                   id="dept-name"
                   value={form.name}
                   onChange={(e) => onFormFieldChange("name", e.target.value)}
-                  placeholder="Ej. Recursos Humanos"
+                  placeholder="Recursos Humanos..."
                   className="h-9 text-sm"
                   required
                 />
@@ -106,7 +106,7 @@ export function DepartmentFormSheet({
                   id="dept-desc"
                   value={form.description}
                   onChange={(e) => onFormFieldChange("description", e.target.value)}
-                  placeholder="Opcional"
+                  placeholder="10 caracteres"
                   className="h-9 text-sm"
                 />
               </div>

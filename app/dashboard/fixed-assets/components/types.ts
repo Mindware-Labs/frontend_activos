@@ -26,6 +26,8 @@ export type FixedAsset = {
   department?: Department;
   assetTypeId: number;
   assetType?: AssetType;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type FixedAssetFormState = {

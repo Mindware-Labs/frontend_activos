@@ -39,7 +39,7 @@ export function FixedAssetsStats({ stats }: FixedAssetsStatsProps) {
       iconClassName: "bg-emerald-100 text-emerald-700",
     },
     {
-      title: "Activos activos",
+      title: "Activos En Servicio",
       value: stats.active,
       icon: CheckCircle2,
       helper: "Operativos",
@@ -48,19 +48,19 @@ export function FixedAssetsStats({ stats }: FixedAssetsStatsProps) {
       iconClassName: "bg-green-100 text-green-700",
     },
     {
-      title: "Activos inactivos",
+      title: "Activos Fuera de Servicio",
       value: stats.inactive,
       icon: XCircle,
       helper: "Desactivados",
       progress: inactivePercent,
       badge: `${inactivePercent}%`,
-      iconClassName: "bg-emerald-50 text-emerald-700",
+      iconClassName: "bg-red-100 text-red-700",
     },
   ];
 
   return (
     <motion.div
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
       variants={staggerContainer}
       initial="initial"
       animate="animate"

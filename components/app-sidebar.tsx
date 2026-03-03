@@ -5,6 +5,7 @@ import {
   Boxes,
   Building2,
   Calculator,
+  HomeIcon,
   LayoutDashboard,
   Tag,
   Users,
@@ -55,16 +56,28 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <div className="px-2 py-1">
-          <p className="text-sidebar-foreground/70 text-xs">Sistema</p>
-          <p className="text-sm font-semibold">Activos Fijos</p>
+    <Sidebar collapsible="icon" className="border-r-border/50" {...props}>
+      <SidebarHeader className="border-b border-border/40 pb-4 pt-5">
+        <div className="flex items-center px-2">
+          {/* Icono del sistema estilo "App Icon" */}
+          <div className="flex h-9 w-9 shrink-0 items-center  rounded-xl bg-gradient-to-br">
+            <HomeIcon className="h-6 w-6 text-black" />
+          </div>
+          
+          {/* Textos del Logo */}
+          <div className="flex flex-col truncate">
+           
+            <span className="truncate text-sm font-bold tracking-tight text-foreground">
+              Activos Fijos
+            </span>
+          </div>
         </div>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} label="Backend" />
+      
+      <SidebarContent className="pt-2">
+        <NavMain items={data.navMain} label="Menú Principal" />
       </SidebarContent>
+      
       <SidebarRail />
     </Sidebar>
   )

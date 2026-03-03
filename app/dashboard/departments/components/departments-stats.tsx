@@ -54,13 +54,13 @@ export function DepartmentsStats({ stats }: DepartmentsStatsProps) {
       helper: "No utilizados",
       progress: inactivePercent,
       badge: `${inactivePercent}%`,
-      iconClassName: "bg-emerald-50 text-emerald-700",
+      iconClassName: "bg-red-100 text-red-700",
     },
   ];
 
   return (
     <motion.div
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
       variants={staggerContainer}
       initial="initial"
       animate="animate"

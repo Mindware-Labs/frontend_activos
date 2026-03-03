@@ -45,42 +45,19 @@ export function FixedAssetsHeader({
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                Gestión de Activos Fijos
+                Listado de Activos Fijos
               </h1>
-              <Badge
-                variant="outline"
-                className="hidden px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 sm:inline-flex"
-              >
-                Sistema
-              </Badge>
+            
             </div>
             <p className="max-w-lg text-sm text-muted-foreground">
-              Administra los activos fijos de tu organización.
+              Gestion de los activos fijos.
             </p>
           </div>
         </div>
 
         <div className="flex w-full shrink-0 items-center gap-2.5 sm:w-auto">
           <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onRefresh}
-                disabled={isRefreshing}
-                className={cn(
-                  "h-10 w-10 p-0 border-border/50 bg-background/80 backdrop-blur-sm transition-all hover:bg-muted hover:scale-105",
-                  isRefreshing && "opacity-70",
-                )}
-              >
-                <RefreshCw
-                  className={cn(
-                    "h-4 w-4 text-muted-foreground",
-                    isRefreshing && "animate-spin text-primary",
-                  )}
-                />
-              </Button>
-            </TooltipTrigger>
+            
             <TooltipContent side="bottom" className="text-xs">
               Actualizar datos
             </TooltipContent>
