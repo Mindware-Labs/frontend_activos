@@ -45,7 +45,7 @@ function buildMonthGrid(month: Date) {
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
 
   const leadingCells = (firstDayOfMonth.getDay() + 6) % 7;
-  const cells: Array<Date | null> = Array.from({ length: leadingCells }).fill(
+const cells: Array<Date | null> = Array.from<Date | null>({ length: leadingCells }).fill(
     null,
   );
 

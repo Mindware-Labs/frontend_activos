@@ -469,7 +469,7 @@ export default function EmployeesPage() {
   return (
     <TooltipProvider>
       <motion.div
-        className="container relative mx-auto max-w-[1400px] bg-gradient-to-br from-emerald-50/60 via-white to-green-50/60 px-3 py-4 sm:px-4 sm:py-5"
+        className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 px-3 py-4 sm:px-4 sm:py-5"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
