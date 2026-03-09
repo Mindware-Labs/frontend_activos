@@ -21,7 +21,11 @@ import {
 
 const data = {
   navMain: [
-
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboard,
+    },
     {
       title: "Activos Fijos",
       url: "/dashboard/fixed-assets",
