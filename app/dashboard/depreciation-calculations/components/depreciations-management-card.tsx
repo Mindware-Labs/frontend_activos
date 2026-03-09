@@ -1,24 +1,19 @@
 "use client";
 
 import {
-  Building2,
   Calendar,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   ChevronsUpDown,
-  Download,
+  DollarSign,
   Eye,
-  FileText,
   Loader2,
   MoreHorizontal,
   Pencil,
   Plus,
-  Printer,
   Search,
   Trash2,
-  Users,
-  XCircle,
+  TrendingDown,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -37,13 +32,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -51,7 +39,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -60,58 +47,52 @@ import {
 import { cn } from "@/lib/utils";
 import { fadeInUp } from "./animations";
 import type {
-  Department,
-  Employee,
-  EmployeeStatusFilter,
-  SortableEmployeeKey,
+  FixedAsset,
+  DepreciationCalculation,
+  SortableDepreciationKey,
 } from "./types";
 
-type EmployeesManagementCardProps = {
-  statusFilter: EmployeeStatusFilter;
-  onStatusFilterChange: (value: EmployeeStatusFilter) => void;
-  departmentFilter: string;
-  onDepartmentFilterChange: (value: string) => void;
-  departments: Department[];
+type DepreciationsManagementCardProps = {
   searchQuery: string;
   onSearchQueryChange: (value: string) => void;
   selectedRows: Set<number>;
   isSaving: boolean;
-  onBulkActivate: () => void;
-  onBulkDeactivate: () => void;
   onBulkDelete: () => void;
   onClearSelection: () => void;
-  paginatedEmployees: Employee[];
+  paginatedDepreciations: DepreciationCalculation[];
   isLoading: boolean;
   onCreate: () => void;
-  onSort: (key: SortableEmployeeKey) => void;
+  onSort: (key: SortableDepreciationKey) => void;
   onToggleSelectAll: () => void;
   onToggleSelectRow: (id: number) => void;
-  onEdit: (employee: Employee) => void;
-  onView: (employee: Employee) => void;
-  onDelete: (employee: Employee) => void;
+  onEdit: (depreciation: DepreciationCalculation) => void;
+  onView: (depreciation: DepreciationCalculation) => void;
+  onDelete: (depreciation: DepreciationCalculation) => void;
   currentPage: number;
   totalPages: number;
   itemsPerPage: number;
-  totalEmployees: number;
+  totalDepreciations: number;
   onPreviousPage: () => void;
   onNextPage: () => void;
   onPageChange: (page: number) => void;
 };
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("es-DO", {
     year: "numeric",
     month: "short",
     day: "numeric",
+  });
+}
+
+function formatCurrency(value: number | string | null | undefined) {
+  if (value === null || value === undefined) return "RD$ 0.00";
+  const num = typeof value === "string" ? parseFloat(value) : value;
+  if (isNaN(num)) return "RD$ 0.00";
+  return num.toLocaleString("es-DO", {
+    style: "currency",
+    currency: "DOP",
+    maximumFractionDigits: 2,
   });
 }
 
@@ -124,21 +105,14 @@ function getPageNumbers(currentPage: number, totalPages: number) {
   });
 }
 
-export function EmployeesManagementCard({
-  statusFilter,
-  onStatusFilterChange,
-  departmentFilter,
-  onDepartmentFilterChange,
-  departments,
+export function DepreciationsManagementCard({
   searchQuery,
   onSearchQueryChange,
   selectedRows,
   isSaving,
-  onBulkActivate,
-  onBulkDeactivate,
   onBulkDelete,
   onClearSelection,
-  paginatedEmployees,
+  paginatedDepreciations,
   isLoading,
   onCreate,
   onSort,
@@ -150,102 +124,62 @@ export function EmployeesManagementCard({
   currentPage,
   totalPages,
   itemsPerPage,
-  totalEmployees,
+  totalDepreciations,
   onPreviousPage,
   onNextPage,
   onPageChange,
-}: EmployeesManagementCardProps) {
+}: DepreciationsManagementCardProps) {
   const pageNumbers = getPageNumbers(currentPage, totalPages);
-  const selectedInPageCount = paginatedEmployees.filter((employee) =>
-    selectedRows.has(employee.id),
+  const selectedInPageCount = paginatedDepreciations.filter((dep) =>
+    selectedRows.has(dep.id),
   ).length;
   const allSelectedInPage =
-    paginatedEmployees.length > 0 &&
-    selectedInPageCount === paginatedEmployees.length;
+    paginatedDepreciations.length > 0 &&
+    selectedInPageCount === paginatedDepreciations.length;
 
   return (
     <motion.div variants={fadeInUp} initial="initial" animate="animate">
       <Card className="overflow-hidden border-border/50 bg-card shadow-lg backdrop-blur-sm">
         {/* Título de la Sección */}
-        <div className="border-b border-border/30 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="border-b border-border/30 bg-linear-to-r from-primary/5 to-primary/10 px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             <h3 className="text-sm font-semibold text-foreground sm:text-base">
-              Listado de Empleados
+              Listado de Depreciaciones
             </h3>
             <Badge variant="secondary" className="ml-auto text-xs font-medium">
-              {totalEmployees} {totalEmployees === 1 ? "empleado" : "empleados"}
+              {totalDepreciations}
             </Badge>
           </div>
         </div>
 
         {/* Panel de Filtros */}
-        <CardHeader className="border-b border-border/40 bg-gradient-to-r from-muted/30 to-muted/10 px-4 pt-2 pb-1 sm:px-6 sm:pt-3 sm:pb-2">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <Tabs
-              value={statusFilter}
-              onValueChange={(value) =>
-                onStatusFilterChange(value as EmployeeStatusFilter)
-              }
-              className="w-full lg:w-auto shrink-0"
-            >
-              <TabsList className="grid h-9 w-full grid-cols-3 bg-background/60 p-1 lg:w-auto border shadow-sm">
-                <TabsTrigger className="text-xs" value="all">
-                  Todos
-                </TabsTrigger>
-                <TabsTrigger className="text-xs" value="active">
-                  Activos
-                </TabsTrigger>
-                <TabsTrigger className="text-xs" value="inactive">
-                  Inactivos
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto lg:justify-end">
-              <Select
-                value={departmentFilter}
-                onValueChange={onDepartmentFilterChange}
-              >
-                <SelectTrigger className="h-9 w-full bg-background shadow-sm sm:w-[180px]">
-                  <Building2 className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  <SelectValue placeholder="Departamento" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los dptos.</SelectItem>
-                  {departments.map((dept) => (
-                    <SelectItem key={dept.id} value={String(dept.id)}>
-                      {dept.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <div className="relative w-full sm:w-[240px]">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Buscar empleado..."
-                  value={searchQuery}
-                  onChange={(event) => onSearchQueryChange(event.target.value)}
-                  className="h-9 bg-background pl-8 shadow-sm transition-colors focus-visible:ring-1 focus-visible:ring-primary/30"
-                />
-              </div>
-
-              <Button
-                onClick={onCreate}
-                disabled={!departments.length}
-                className="h-10 w-full px-4 sm:w-auto shadow-sm active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 font-medium"
-              >
-                <Plus className="mr-1.5 h-4 w-4" />
-                Añadir Empleado
-              </Button>
+        <CardHeader className="border-b border-border/40 bg-linear-to-r from-muted/30 to-muted/10 px-4 pt-2 pb-1 sm:px-6 sm:pt-3 sm:pb-2">
+          <div className="flex flex-col gap-3">
+            <div className="relative w-full">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Buscar por activo o cuenta..."
+                value={searchQuery}
+                onChange={(event) => onSearchQueryChange(event.target.value)}
+                className="h-9 bg-background pl-8 shadow-sm transition-colors focus-visible:ring-1 focus-visible:ring-primary/30"
+              />
             </div>
+
+            <Button
+              onClick={onCreate}
+              size="sm"
+              className="h-10 w-full px-4 sm:w-auto shadow-sm active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 font-medium"
+            >
+              <Plus className="mr-1.5 h-4 w-4" />
+              Añadir Cálculo
+            </Button>
           </div>
         </CardHeader>
 
         <CardContent className="p-0">
-          {/* Panel de Acciones Masivas (Flotante) */}
+          {/* Panel de Acciones Masivas */}
           <AnimatePresence>
             {selectedRows.size > 0 && (
               <motion.div
@@ -259,26 +193,6 @@ export function EmployeesManagementCard({
                     {selectedRows.size} fila(s) seleccionadas
                   </span>
                   <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={onBulkActivate}
-                      disabled={isSaving}
-                      className="h-8 border-emerald-200/50 bg-background/50 text-[11px] text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800/50 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
-                    >
-                      <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
-                      Activar
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={onBulkDeactivate}
-                      disabled={isSaving}
-                      className="h-8 border-amber-200/50 bg-background/50 text-[11px] text-amber-700 hover:bg-amber-100 dark:border-amber-800/50 dark:text-amber-400 dark:hover:bg-amber-900/50"
-                    >
-                      <XCircle className="mr-1.5 h-3.5 w-3.5" />
-                      Desactivar
-                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -303,7 +217,7 @@ export function EmployeesManagementCard({
             )}
           </AnimatePresence>
 
-          {/* Estado de Carga / Vacio */}
+          {/* Estado de Carga / Vacío */}
           {isLoading ? (
             <div className="flex h-64 flex-col items-center justify-center text-muted-foreground">
               <Loader2 className="mb-3 h-6 w-6 animate-spin text-primary/60" />
@@ -311,17 +225,16 @@ export function EmployeesManagementCard({
                 Cargando registros...
               </p>
             </div>
-          ) : paginatedEmployees.length === 0 ? (
+          ) : paginatedDepreciations.length === 0 ? (
             <div className="flex h-64 flex-col items-center justify-center border-b border-border bg-muted/5 text-center px-4">
               <div className="mb-3 rounded-full bg-muted/30 p-3 ring-1 ring-border">
-                <Users className="h-6 w-6 text-muted-foreground/60" />
+                <TrendingDown className="h-6 w-6 text-muted-foreground/60" />
               </div>
               <p className="text-sm font-semibold text-foreground">
-                No hay empleados
+                No hay depreciaciones
               </p>
-              <p className="mt-1 text-xs text-muted-foreground max-w-[250px]">
-                Ajusta los filtros de búsqueda o crea un nuevo empleado para
-                comenzar.
+              <p className="mt-1 text-xs text-muted-foreground max-w-62.5">
+                Crea un nuevo cálculo de depreciación para comenzar.
               </p>
             </div>
           ) : (
@@ -329,14 +242,14 @@ export function EmployeesManagementCard({
               {/* Controles Mobile Selección */}
               <div className="flex items-center justify-between border-b border-border bg-muted/10 px-4 py-2.5 md:hidden">
                 <span className="text-[11px] font-medium text-muted-foreground">
-                  Sel: {selectedInPageCount}/{paginatedEmployees.length}
+                  Sel: {selectedInPageCount}/{paginatedDepreciations.length}
                 </span>
                 <label className="flex items-center gap-2 text-[11px] font-semibold text-foreground">
                   Seleccionar página
                   <Checkbox
                     checked={allSelectedInPage}
                     onCheckedChange={onToggleSelectAll}
-                    className="h-4 w-4 rounded-[4px]"
+                    className="h-4 w-4 rounded-lg"
                   />
                 </label>
               </div>
@@ -345,57 +258,56 @@ export function EmployeesManagementCard({
               <div className="hidden w-full overflow-x-auto md:block">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-b-border/50 bg-gradient-to-r from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30">
+                    <TableRow className="border-b-border/50 bg-linear-to-r from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30">
                       <TableHead className="w-10 pl-5 pr-2">
                         <Checkbox
                           checked={allSelectedInPage}
                           onCheckedChange={onToggleSelectAll}
-                          className="rounded-[4px] border-muted-foreground/40 data-[state=checked]:border-primary"
+                          className="rounded-lg border-muted-foreground/40 data-[state=checked]:border-primary"
                         />
                       </TableHead>
-                      {/* Cabeceras de Tabla Ordenables */}
                       <TableHead className="h-10 px-2">
                         <button
-                          onClick={() => onSort("name")}
+                          onClick={() => onSort("processYear")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Empleado{" "}
-                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
-                        </button>
-                      </TableHead>
-                      <TableHead className="h-9 px-2">
-                        <button
-                          onClick={() => onSort("cedula")}
-                          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          Cédula{" "}
-                          <ChevronsUpDown className="h-3 w-3 opacity-50" />
-                        </button>
-                      </TableHead>
-                      <TableHead className="h-10 px-2">
-                        <button
-                          onClick={() => onSort("hireDate")}
-                          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          Fecha Ingreso{" "}
+                          Año{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
                       <TableHead className="h-10 px-2">
                         <button
-                          onClick={() => onSort("departmentId")}
+                          onClick={() => onSort("processMonth")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Departamento{" "}
+                          Mes{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
                       <TableHead className="h-10 px-2">
                         <button
-                          onClick={() => onSort("status")}
+                          onClick={() => onSort("processDate")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Estado{" "}
+                          Fecha{" "}
+                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
+                        </button>
+                      </TableHead>
+                      <TableHead className="h-10 px-2">
+                        <button
+                          onClick={() => onSort("amountDepreciation")}
+                          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          Monto{" "}
+                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
+                        </button>
+                      </TableHead>
+                      <TableHead className="h-10 px-2">
+                        <button
+                          onClick={() => onSort("accumulatedDepreciation")}
+                          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          Acumulado{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
@@ -406,12 +318,12 @@ export function EmployeesManagementCard({
                   </TableHeader>
                   <TableBody>
                     <AnimatePresence>
-                      {paginatedEmployees.map((employee, index) => {
-                        const isChecked = selectedRows.has(employee.id);
+                      {paginatedDepreciations.map((depreciation, index) => {
+                        const isChecked = selectedRows.has(depreciation.id);
 
                         return (
                           <motion.tr
-                            key={employee.id}
+                            key={depreciation.id}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -425,62 +337,43 @@ export function EmployeesManagementCard({
                               <Checkbox
                                 checked={isChecked}
                                 onCheckedChange={() =>
-                                  onToggleSelectRow(employee.id)
+                                  onToggleSelectRow(depreciation.id)
                                 }
-                                className="rounded-[4px] border-muted-foreground/40 data-[state=checked]:border-primary"
+                                className="rounded-lg border-muted-foreground/40 data-[state=checked]:border-primary"
                               />
                             </TableCell>
-                            <TableCell className="px-2 py-3">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-9 w-9 rounded-lg border border-border/50 bg-gradient-to-br from-background to-muted/20 shadow-sm">
-                                  <AvatarFallback className="rounded-lg bg-transparent text-xs font-semibold text-muted-foreground">
-                                    {getInitials(employee.name)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-semibold leading-tight text-foreground">
-                                    {employee.name}
-                                  </span>
-                                  <span className="mt-1 text-xs leading-tight text-muted-foreground">
-                                    {employee.personType}
-                                  </span>
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell className="px-2 py-3 font-mono text-xs font-medium text-muted-foreground">
-                              {employee.cedula}
-                            </TableCell>
-                            <TableCell className="px-2 py-3">
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <Calendar className="h-3.5 w-3.5 shrink-0 opacity-60" />
-                                <span className="text-xs font-medium">
-                                  {formatDate(employee.hireDate)}
-                                </span>
-                              </div>
+                            <TableCell className="px-2 py-3 font-semibold text-sm">
+                              {depreciation.processYear}
                             </TableCell>
                             <TableCell className="px-2 py-3">
                               <Badge
                                 variant="outline"
                                 className="h-6 px-2 text-xs font-medium text-muted-foreground bg-background border-border/60"
                               >
-                                {employee.department?.name ??
-                                  `Dpto #${employee.departmentId}`}
+                                {String(depreciation.processMonth).padStart(2, "0")}
                               </Badge>
                             </TableCell>
                             <TableCell className="px-2 py-3">
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className={cn(
-                                    "h-2 w-2 rounded-full shadow-sm",
-                                    employee.status
-                                      ? "bg-emerald-500 ring-2 ring-emerald-500/20"
-                                      : "bg-amber-500 ring-2 ring-amber-500/20",
-                                  )}
-                                />
-                                <span className="text-xs font-medium text-muted-foreground">
-                                  {employee.status ? "Activo" : "Inactivo"}
+                              <div className="flex items-center gap-2 text-muted-foreground">
+                                <Calendar className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                                <span className="text-xs font-medium">
+                                  {formatDate(depreciation.processDate)}
                                 </span>
                               </div>
+                            </TableCell>
+                            <TableCell className="px-2 py-3 max-w-30">
+                              <span className="inline-block text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-400 truncate">
+                                {formatCurrency(
+                                  depreciation.amountDepreciation,
+                                )}
+                              </span>
+                            </TableCell>
+                            <TableCell className="px-2 py-3 max-w-30">
+                              <span className="inline-block text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-400 truncate">
+                                {formatCurrency(
+                                  depreciation.accumulatedDepreciation,
+                                )}
+                              </span>
                             </TableCell>
                             <TableCell className="px-5 py-3 text-right">
                               <div className="flex items-center justify-end gap-1.5">
@@ -489,7 +382,7 @@ export function EmployeesManagementCard({
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      onClick={() => onView(employee)}
+                                      onClick={() => onView(depreciation)}
                                       className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
                                     >
                                       <Eye className="h-4 w-4" />
@@ -505,7 +398,7 @@ export function EmployeesManagementCard({
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      onClick={() => onEdit(employee)}
+                                      onClick={() => onEdit(depreciation)}
                                       disabled={isSaving}
                                       className="h-8 w-8 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-all"
                                     >
@@ -529,24 +422,11 @@ export function EmployeesManagementCard({
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent
                                     align="end"
-                                    className="w-44"
+                                    className="w-40"
                                   >
-                                    <DropdownMenuItem className="text-xs">
-                                      <FileText className="mr-2 h-4 w-4 opacity-70" />{" "}
-                                      Ver contrato
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="text-xs">
-                                      <Printer className="mr-2 h-4 w-4 opacity-70" />{" "}
-                                      Imprimir ficha
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="text-xs">
-                                      <Download className="mr-2 h-4 w-4 opacity-70" />{" "}
-                                      Exportar datos
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                       className="text-xs text-rose-600 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/50"
-                                      onClick={() => onDelete(employee)}
+                                      onClick={() => onDelete(depreciation)}
                                       disabled={isSaving}
                                     >
                                       <Trash2 className="mr-2 h-4 w-4 opacity-70" />{" "}
@@ -567,12 +447,12 @@ export function EmployeesManagementCard({
               {/* LISTA MÓVIL */}
               <div className="flex flex-col gap-px bg-border/40 md:hidden">
                 <AnimatePresence>
-                  {paginatedEmployees.map((employee, index) => {
-                    const isChecked = selectedRows.has(employee.id);
+                  {paginatedDepreciations.map((depreciation, index) => {
+                    const isChecked = selectedRows.has(depreciation.id);
 
                     return (
                       <motion.div
-                        key={employee.id}
+                        key={depreciation.id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -587,18 +467,22 @@ export function EmployeesManagementCard({
                           <Checkbox
                             checked={isChecked}
                             onCheckedChange={() =>
-                              onToggleSelectRow(employee.id)
+                              onToggleSelectRow(depreciation.id)
                             }
-                            className="mt-1 rounded-[4px]"
+                            className="mt-1 rounded-lg"
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <div className="truncate">
-                                <p className="text-sm font-semibold text-foreground truncate">
-                                  {employee.name}
+                                <p className="text-sm font-semibold text-foreground">
+                                  {depreciation.processYear} / Mes{" "}
+                                  {String(depreciation.processMonth).padStart(
+                                    2,
+                                    "0",
+                                  )}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-0.5">
-                                  {employee.personType} • {employee.cedula}
+                                  {formatDate(depreciation.processDate)}
                                 </p>
                               </div>
                               <DropdownMenu>
@@ -613,23 +497,23 @@ export function EmployeesManagementCard({
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                   align="end"
-                                  className="w-44"
+                                  className="w-40"
                                 >
                                   <DropdownMenuItem
-                                    onClick={() => onView(employee)}
+                                    onClick={() => onView(depreciation)}
                                     className="text-xs"
                                   >
-                                    <Eye className="mr-2 h-4 w-4" /> Ver detalle
+                                    <Eye className="mr-2 h-4 w-4" /> Ver
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
-                                    onClick={() => onEdit(employee)}
+                                    onClick={() => onEdit(depreciation)}
                                     className="text-xs"
                                   >
                                     <Pencil className="mr-2 h-4 w-4" /> Editar
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     className="text-xs text-rose-600 focus:text-rose-600"
-                                    onClick={() => onDelete(employee)}
+                                    onClick={() => onDelete(depreciation)}
                                   >
                                     <Trash2 className="mr-2 h-4 w-4" /> Eliminar
                                   </DropdownMenuItem>
@@ -637,24 +521,20 @@ export function EmployeesManagementCard({
                               </DropdownMenu>
                             </div>
 
-                            <div className="mt-3 flex flex-wrap items-center gap-2">
-                              <Badge
-                                variant="outline"
-                                className="h-6 px-2 text-xs font-medium text-muted-foreground bg-background border-border/60"
-                              >
-                                {employee.department?.name ??
-                                  `Dpto #${employee.departmentId}`}
-                              </Badge>
-                              <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                                <div
-                                  className={cn(
-                                    "h-2 w-2 rounded-full",
-                                    employee.status
-                                      ? "bg-emerald-500 ring-2 ring-emerald-500/20"
-                                      : "bg-amber-500 ring-2 ring-amber-500/20",
+                            <div className="mt-3 flex flex-col gap-2">
+                              <p className="text-muted-foreground text-xs">Montos:</p>
+                              <div className="flex flex-col sm:flex-row gap-2 text-xs font-semibold">
+                                <span className="text-blue-700 dark:text-blue-400 truncate">
+                                  {formatCurrency(
+                                    depreciation.amountDepreciation,
                                   )}
-                                />
-                                {employee.status ? "Activo" : "Inactivo"}
+                                </span>
+                                <span className="text-muted-foreground">|</span>
+                                <span className="text-amber-700 dark:text-amber-400 truncate">
+                                  Acum: {formatCurrency(
+                                    depreciation.accumulatedDepreciation,
+                                  )}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -667,8 +547,8 @@ export function EmployeesManagementCard({
             </>
           )}
 
-          {/* Paginación Minimalista */}
-          {!isLoading && totalEmployees > 0 && (
+          {/* Paginación */}
+          {!isLoading && totalDepreciations > 0 && (
             <div className="flex flex-col gap-3 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
               <p className="text-[11px] font-medium text-muted-foreground text-center sm:text-left">
                 Mostrando{" "}
@@ -677,9 +557,9 @@ export function EmployeesManagementCard({
                 </span>{" "}
                 -{" "}
                 <span className="text-foreground">
-                  {Math.min(currentPage * itemsPerPage, totalEmployees)}
+                  {Math.min(currentPage * itemsPerPage, totalDepreciations)}
                 </span>{" "}
-                de <span className="text-foreground">{totalEmployees}</span>
+                de <span className="text-foreground">{totalDepreciations}</span>
               </p>
 
               <div className="flex items-center justify-center gap-1">
@@ -700,7 +580,7 @@ export function EmployeesManagementCard({
                       variant={currentPage === pageNum ? "default" : "ghost"}
                       size="sm"
                       className={cn(
-                        "h-7 min-w-[28px] px-2 text-[11px]",
+                        "h-7 min-w-7 px-2 text-[11px]",
                         currentPage !== pageNum &&
                           "text-muted-foreground hover:text-foreground",
                       )}

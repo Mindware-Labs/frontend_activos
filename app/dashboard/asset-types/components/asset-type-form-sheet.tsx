@@ -131,20 +131,30 @@ export function AssetTypeFormSheet({
                   required
                 />
               </div>
-
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="type-status"
-                  checked={form.status}
-                  onCheckedChange={(checked) =>
-                    onFormFieldChange("status", Boolean(checked))
-                  }
-                />
-                <Label htmlFor="type-status" className="select-none text-sm">
-                  {form.status ? "Activo" : "Inactivo"}
-                </Label>
-              </div>
             </section>
+
+            {/* Sección Opcional: Estado */}
+            {isEditMode && (
+              <section className="rounded-xl border border-emerald-200/50 bg-emerald-50/50 dark:border-emerald-800/30 dark:bg-emerald-950/20 p-4 transition-colors">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-semibold">
+                      Estado en el sistema
+                    </Label>
+                    <p className="text-[11px] text-muted-foreground">
+                      Activa o inactiva el acceso y visibilidad.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={form.status}
+                    onCheckedChange={(checked) =>
+                      onFormFieldChange("status", checked)
+                    }
+                    className="data-[state=checked]:bg-emerald-500"
+                  />
+                </div>
+              </section>
+            )}
           </form>
         </div>
 

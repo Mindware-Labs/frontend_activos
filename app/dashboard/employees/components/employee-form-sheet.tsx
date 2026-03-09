@@ -70,16 +70,7 @@ export function EmployeeFormSheet({
         <SheetHeader className="relative overflow-hidden border-b bg-gradient-to-br from-emerald-500/10 via-background to-background px-5 py-5 text-left z-10">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-10 -mt-10" />
           <div className="relative mb-2 flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className={cn(
-                "px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400",
-                !isEditMode &&
-                  "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400",
-              )}
-            >
-              {isEditMode ? "Modo Edición" : "Nuevo Registro"}
-            </Badge>
+           
           </div>
           <SheetTitle className="text-xl font-bold tracking-tight">
             {isEditMode ? "Editar Empleado" : "Registrar Empleado"}
@@ -246,27 +237,26 @@ export function EmployeeFormSheet({
 
         {/* Footer Adherido */}
         <SheetFooter className="border-t bg-background/80 px-5 py-4 backdrop-blur-md z-10">
-          <div className="flex w-full items-center gap-2 sm:justify-end">
+          <div className="flex w-full items-center gap-3 sm:justify-end">
             <Button
               type="button"
-              variant="ghost"
-              size="sm"
+              variant="outline"
               onClick={onCancel}
-              className="flex-1 sm:flex-none text-muted-foreground hover:text-foreground"
+              disabled={isSaving}
+              className="h-10 flex-1 sm:flex-none px-4 font-medium"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               form="employee-form"
-              size="sm"
               disabled={isSaving}
-              className="flex-1 sm:flex-none shadow-md transition-all active:scale-[0.98]"
+              className="h-10 flex-1 sm:flex-none px-6 shadow-md transition-all active:scale-[0.98] font-medium"
             >
               {isSaving && (
-                <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {isEditMode ? "Guardar cambios" : "Registrar empleado"}
+              {isEditMode ? "Guardar cambios" : "Crear"}
             </Button>
           </div>
         </SheetFooter>

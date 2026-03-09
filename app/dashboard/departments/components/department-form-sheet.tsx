@@ -51,18 +51,7 @@ export function DepartmentFormSheet({
       <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-[440px] border-l-0 sm:border-l shadow-2xl">
         <SheetHeader className="relative overflow-hidden border-b bg-gradient-to-br from-emerald-500/10 via-background to-background px-5 py-5 text-left z-10">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-10 -mt-10" />
-          <div className="relative mb-2 flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className={cn(
-                "px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400",
-                !isEditMode &&
-                  "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400",
-              )}
-            >
-              {isEditMode ? "Modo Edición" : "Nuevo Registro"}
-            </Badge>
-          </div>
+         
           <SheetTitle className="text-xl font-bold tracking-tight">
             {isEditMode ? "Editar Departamento" : "Registrar Departamento"}
           </SheetTitle>
@@ -110,30 +99,61 @@ export function DepartmentFormSheet({
                   className="h-9 text-sm"
                 />
               </div>
-
-              {isEditMode && (
-                <div className="space-y-1.5 flex items-center">
-                  <Label className="text-xs font-semibold">
-                    Activo
-                  </Label>
-                  <Switch
-                    checked={form.status}
-                    onCheckedChange={(val) => onFormFieldChange("status", val)}
-                  />
-                </div>
-              )}
             </section>
+
+            {/* Sección Opcional: Estado - Solo visible en edición */}
+            {isEditMode && (
+              <section className="rounded-xl border border-emerald-200/50 bg-emerald-50/50 dark:border-emerald-800/30 dark:bg-emerald-950/20 p-4 transition-colors">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-semibold">
+                      Estado en el sistema
+                    </Label>
+                    <p className="text-[11px] text-muted-foreground">
+                      Activa o inactiva el acceso y visibilidad del departamento.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-xs font-medium transition-colors",
+                      form.status ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+                    )}>
+                      {form.status ? "Activo" : "Inactivo"}
+                    </span>
+                    <Switch
+                      checked={form.status}
+                      onCheckedChange={(checked) =>
+                        onFormFieldChange("status", checked)
+                      }
+                      className="data-[state=checked]:bg-emerald-500"
+                    />
+                  </div>
+                </div>
+              </section>
+            )}
           </form>
         </div>
 
-        <SheetFooter className="flex justify-end gap-2 p-5">
-          <Button variant="outline" onClick={onCancel} disabled={isSaving}>
-            Cancelar
-          </Button>
-          <Button type="submit" form="department-form" disabled={isSaving}>
-            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            {isEditMode ? "Guardar" : "Crear"}
-          </Button>
+        <SheetFooter className="border-t bg-background/80 px-5 py-4 backdrop-blur-md z-10">
+          <div className="flex w-full items-center gap-3 sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={onCancel}
+              disabled={isSaving}
+              className="h-10 flex-1 sm:flex-none px-4 font-medium"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              form="department-form"
+              disabled={isSaving}
+              className="h-10 flex-1 sm:flex-none px-6 shadow-md transition-all active:scale-[0.98] font-medium"
+            >
+              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isEditMode ? "Guardar" : "Crear"}
+            </Button>
+          </div>
         </SheetFooter>
       </SheetContent>
     </Sheet>

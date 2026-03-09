@@ -179,8 +179,7 @@ export function DepartmentsManagementCard({
               <Button
                 onClick={onCreate}
                 disabled={isSaving}
-                size="sm"
-                className="h-9 w-full sm:w-auto shadow-sm active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90"
+                className="h-10 w-full px-4 sm:w-auto shadow-sm active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 font-medium"
               >
                 <Plus className="mr-1.5 h-4 w-4" />
                 Añadir Depto

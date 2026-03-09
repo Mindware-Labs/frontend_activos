@@ -1,31 +1,20 @@
 "use client";
 
-import { Plus, RefreshCw, Boxes } from "lucide-react";
+import { Plus, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { fadeInUp } from "./animations";
-import { cn } from "@/lib/utils";
 
-type FixedAssetsHeaderProps = {
-  isRefreshing: boolean;
+type DepreciationsHeaderProps = {
   canCreate: boolean;
-  onRefresh: () => void;
   onCreate: () => void;
 };
 
-export function FixedAssetsHeader({
-  isRefreshing,
+export function DepreciationsHeader({
   canCreate,
-  onRefresh,
   onCreate,
-}: FixedAssetsHeaderProps) {
+}: DepreciationsHeaderProps) {
   return (
     <motion.header
       className="relative mb-6 overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-card/95 p-5 shadow-lg transition-all hover:shadow-xl sm:px-6 sm:py-6 z-10"
@@ -39,37 +28,29 @@ export function FixedAssetsHeader({
       <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg ring-2 ring-emerald-200/50 dark:from-emerald-600 dark:to-emerald-700 dark:ring-emerald-800/50">
-            <Boxes className="h-6 w-6 text-white" />
+            <TrendingDown className="h-6 w-6 text-white" />
           </div>
 
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                Listado de Activos Fijos
+                Depreciaciones
               </h1>
-            
             </div>
             <p className="max-w-lg text-sm text-muted-foreground">
-              Gestion de los activos fijos.
+              Gestión de cálculos de depreciación.
             </p>
           </div>
         </div>
 
         <div className="flex w-full shrink-0 items-center gap-2.5 sm:w-auto">
-          <Tooltip>
-            
-            <TooltipContent side="bottom" className="text-xs">
-              Actualizar datos
-            </TooltipContent>
-          </Tooltip>
-
           <Button
             onClick={onCreate}
             disabled={!canCreate}
             className="h-10 w-full px-4 shadow-md transition-all active:scale-95 hover:shadow-lg sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Nuevo Activo
+            Nuevo Cálculo
           </Button>
         </div>
       </div>

@@ -59,10 +59,9 @@ export function DepartmentsHeader({
          
 
           <Button
-            size="sm"
             onClick={onCreate}
             disabled={!canCreate}
-            className="h-10 w-full shadow-md transition-all active:scale-95 hover:shadow-lg sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium"
+            className="h-10 w-full px-4 shadow-md transition-all active:scale-95 hover:shadow-lg sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium"
           >
             <Plus className="mr-2 h-4 w-4" />
             Nuevo Departamento

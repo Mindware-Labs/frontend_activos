@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, UserCheck, UserX, Users } from "lucide-react";
+import { UserCheck, UserX, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,7 +10,6 @@ import type { EmployeeStats } from "./types";
 
 type EmployeesStatsProps = {
   stats: EmployeeStats;
-  departmentsCount: number;
 };
 
 type StatCard = {
@@ -23,21 +22,11 @@ type StatCard = {
   iconClassName: string;
 };
 
-export function EmployeesStats({
-  stats,
-  departmentsCount,
-}: EmployeesStatsProps) {
+export function EmployeesStats({ stats }: EmployeesStatsProps) {
   const activePercent =
     stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0;
   const inactivePercent =
     stats.total > 0 ? Math.round((stats.inactive / stats.total) * 100) : 0;
-  const departmentsWithEmployees = stats.byDepartment.filter(
-    (department) => department.count > 0,
-  ).length;
-  const departmentsCoverage =
-    departmentsCount > 0
-      ? Math.round((departmentsWithEmployees / departmentsCount) * 100)
-      : 0;
 
   const cardsData: StatCard[] = [
     {
@@ -65,22 +54,13 @@ export function EmployeesStats({
       helper: "Sin actividad actual",
       progress: inactivePercent,
       badge: `${inactivePercent}%`,
-      iconClassName: "bg-emerald-50 text-emerald-700",
-    },
-    {
-      title: "Departamentos",
-      value: departmentsCount,
-      icon: Building2,
-      helper: `${departmentsWithEmployees} con personal asignado`,
-      progress: departmentsCoverage,
-      badge: `${departmentsCoverage}%`,
-      iconClassName: "bg-emerald-100 text-emerald-700",
+      iconClassName: "bg-red-100 text-red-700",
     },
   ];
 
   return (
     <motion.div
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
       variants={staggerContainer}
       initial="initial"
       animate="animate"
