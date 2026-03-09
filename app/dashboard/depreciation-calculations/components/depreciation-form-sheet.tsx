@@ -28,6 +28,7 @@ import type {
   DepreciationCalculation,
   DepreciationFormState,
   SetDepreciationFormField,
+  DepreciationFormErrors,
 } from "./types";
 
 type DepreciationFormSheetProps = {
@@ -40,6 +41,7 @@ type DepreciationFormSheetProps = {
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onFormFieldChange: SetDepreciationFormField;
   onCancel: () => void;
+  errors: DepreciationFormErrors;
 };
 
 export function DepreciationFormSheet({
@@ -52,6 +54,7 @@ export function DepreciationFormSheet({
   onSubmit,
   onFormFieldChange,
   onCancel,
+  errors,
 }: DepreciationFormSheetProps) {
   const isEditMode = Boolean(editingDepreciation);
 
@@ -100,6 +103,9 @@ export function DepreciationFormSheet({
                 disabled={isSaving}
                 className="h-9 text-sm"
               />
+              {errors.processYear && (
+                <p className="text-red-500 text-xs mt-1">{errors.processYear}</p>
+              )}
             </div>
 
             {/* Mes del Proceso */}
@@ -120,13 +126,18 @@ export function DepreciationFormSheet({
                 <SelectContent>
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                     <SelectItem key={month} value={String(month)}>
-                      {new Date(2024, month - 1).toLocaleDateString("es-DO", {
-                        month: "long",
-                      })}
+                      {new Date(2024, month - 1)
+                        .toLocaleDateString("es-DO", {
+                          month: "long",
+                        })
+                        .replace(/^\w/, (c) => c.toUpperCase())}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {errors.processMonth && (
+                <p className="text-red-500 text-xs mt-1">{errors.processMonth}</p>
+              )}
             </div>
 
             {/* Fecha del Proceso */}
@@ -142,6 +153,9 @@ export function DepreciationFormSheet({
                 disabled={isSaving}
                 className="h-9 text-sm"
               />
+              {errors.processDate && (
+                <p className="text-red-500 text-xs mt-1">{errors.processDate}</p>
+              )}
             </div>
 
             {/* Activo Fijo */}
@@ -167,6 +181,9 @@ export function DepreciationFormSheet({
                   ))}
                 </SelectContent>
               </Select>
+              {errors.fixedAssetId && (
+                <p className="text-red-500 text-xs mt-1">{errors.fixedAssetId}</p>
+              )}
             </div>
 
             {/* Monto Depreciación */}
@@ -190,6 +207,9 @@ export function DepreciationFormSheet({
                 disabled={isSaving}
                 className="h-9 text-sm"
               />
+              {errors.amountDepreciation && (
+                <p className="text-red-500 text-xs mt-1">{errors.amountDepreciation}</p>
+              )}
             </div>
 
             {/* Depreciación Acumulada */}
@@ -213,6 +233,9 @@ export function DepreciationFormSheet({
                 disabled={isSaving}
                 className="h-9 text-sm"
               />
+              {errors.accumulatedDepreciation && (
+                <p className="text-red-500 text-xs mt-1">{errors.accumulatedDepreciation}</p>
+              )}
             </div>
 
             {/* Cuenta de Compra */}
@@ -231,6 +254,9 @@ export function DepreciationFormSheet({
                 disabled={isSaving}
                 className="h-9 text-sm"
               />
+              {errors.purchaseAccount && (
+                <p className="text-red-500 text-xs mt-1">{errors.purchaseAccount}</p>
+              )}
             </div>
 
             {/* Cuenta de Depreciación */}
@@ -252,6 +278,9 @@ export function DepreciationFormSheet({
                 disabled={isSaving}
                 className="h-9 text-sm"
               />
+              {errors.depreciationAccount && (
+                <p className="text-red-500 text-xs mt-1">{errors.depreciationAccount}</p>
+              )}
             </div>
           </form>
         </div>

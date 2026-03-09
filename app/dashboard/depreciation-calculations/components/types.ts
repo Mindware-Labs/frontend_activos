@@ -50,3 +50,5 @@ export type SetDepreciationFormField = <K extends keyof DepreciationFormState>(
   field: K,
   value: DepreciationFormState[K],
 ) => void;
+
+export type DepreciationFormErrors = Partial<Record<keyof DepreciationFormState, string>>;
