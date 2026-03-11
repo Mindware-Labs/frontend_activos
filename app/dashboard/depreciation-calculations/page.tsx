@@ -20,6 +20,7 @@ import type {
   DepreciationFormState,
   SortDirection,
   SortableDepreciationKey,
+  DepreciationFormErrors,
 } from "./components/types";
 
 const API_BASE_URL = (
@@ -118,6 +119,7 @@ export default function DepreciationsPage() {
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [errors, setErrors] = useState<DepreciationFormErrors>({});
 
   const loadData = useCallback(async (showNotification = false) => {
     setIsLoading(true);
@@ -239,12 +241,41 @@ export default function DepreciationsPage() {
     if (!open) {
       setEditingDepreciation(null);
       setForm(EMPTY_FORM);
+      setErrors({});
     }
   }
+
+  const validateForm = () => {
+    const newErrors: DepreciationFormErrors = {};
+    if (!form.processYear.trim()) newErrors.processYear = "El año del proceso es requerido.";
+    if (!form.processMonth) newErrors.processMonth = "El mes del proceso es requerido.";
+    if (!form.processDate) newErrors.processDate = "La fecha del proceso es requerida.";
+    if (!form.amountDepreciation.trim()) {
+      newErrors.amountDepreciation = "El monto de depreciación es requerido.";
+    } else if (parseFloat(form.amountDepreciation) <= 0) {
+      newErrors.amountDepreciation = "El monto de depreciación debe ser mayor a 0.";
+    }
+    if (!form.accumulatedDepreciation.trim()) {
+      newErrors.accumulatedDepreciation = "La depreciación acumulada es requerida.";
+    } else if (parseFloat(form.accumulatedDepreciation) <= 0) {
+      newErrors.accumulatedDepreciation = "La depreciación acumulada debe ser mayor a 0.";
+    }
+    if (!form.purchaseAccount.trim()) newErrors.purchaseAccount = "La cuenta de compra es requerida.";
+    if (!form.depreciationAccount.trim()) newErrors.depreciationAccount = "La cuenta de depreciación es requerida.";
+    if (!form.fixedAssetId) newErrors.fixedAssetId = "El activo fijo es requerido.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
+    setErrors({}); // Limpiar errores previos
+
+    if (!validateForm()) {
+      setIsSaving(false);
+      return;
+    }
 
     try {
       const payload = {
@@ -442,6 +473,7 @@ export default function DepreciationsPage() {
           onSubmit={handleSubmit}
           onFormFieldChange={setFormField}
           onCancel={() => setIsSheetOpen(false)}
+          errors={errors}
         />
 
         <DepreciationDetailDialog

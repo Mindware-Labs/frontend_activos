@@ -27,6 +27,7 @@ import type {
   DepreciationFormState,
   FixedAsset,
   SetDepreciationFormField,
+  DepreciationFormErrors,
 } from "./types";
 
 type DepreciationFormSheetProps = {
@@ -39,6 +40,7 @@ type DepreciationFormSheetProps = {
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onFormFieldChange: SetDepreciationFormField;
   onCancel: () => void;
+  errors: DepreciationFormErrors;
 };
 
 export function DepreciationFormSheet({
@@ -51,6 +53,7 @@ export function DepreciationFormSheet({
   onSubmit,
   onFormFieldChange,
   onCancel,
+  errors,
 }: DepreciationFormSheetProps) {
   const isEditMode = Boolean(editingDepreciation);
   const sectionTitleClass =
@@ -76,7 +79,11 @@ export function DepreciationFormSheet({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto bg-white">
-          <form id="depreciation-form" onSubmit={onSubmit} className="space-y-3 p-4">
+          <form
+            id="depreciation-form"
+            onSubmit={onSubmit}
+            className="space-y-3 p-4"
+          >
             <section className="space-y-2.5">
               <h3 className={sectionTitleClass}>Proceso</h3>
 
@@ -106,20 +113,27 @@ export function DepreciationFormSheet({
                   </Label>
                   <Select
                     value={form.processMonth}
-                    onValueChange={(value) => onFormFieldChange("processMonth", value)}
+                    onValueChange={(value) =>
+                      onFormFieldChange("processMonth", value)
+                    }
                     disabled={isSaving}
                   >
                     <SelectTrigger id="process-month" className={controlClass}>
                       <SelectValue placeholder="Selecciona..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {Array.from({ length: 12 }, (_, index) => index + 1).map((month) => (
-                        <SelectItem key={month} value={String(month)}>
-                          {new Date(2026, month - 1).toLocaleDateString("es-DO", {
-                            month: "long",
-                          })}
-                        </SelectItem>
-                      ))}
+                      {Array.from({ length: 12 }, (_, index) => index + 1).map(
+                        (month) => (
+                          <SelectItem key={month} value={String(month)}>
+                            {new Date(2026, month - 1).toLocaleDateString(
+                              "es-DO",
+                              {
+                                month: "long",
+                              },
+                            )}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -132,7 +146,9 @@ export function DepreciationFormSheet({
                     id="process-date"
                     value={form.processDate}
                     disabled={isSaving}
-                    onChange={(value) => onFormFieldChange("processDate", value)}
+                    onChange={(value) =>
+                      onFormFieldChange("processDate", value)
+                    }
                     className={controlClass}
                   />
                 </div>
@@ -146,7 +162,9 @@ export function DepreciationFormSheet({
                 <Label className={fieldLabelClass}>Activo fijo</Label>
                 <Select
                   value={form.fixedAssetId}
-                  onValueChange={(value) => onFormFieldChange("fixedAssetId", value)}
+                  onValueChange={(value) =>
+                    onFormFieldChange("fixedAssetId", value)
+                  }
                   disabled={isSaving}
                 >
                   <div className="group relative">
@@ -173,7 +191,10 @@ export function DepreciationFormSheet({
 
               <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 <div className="space-y-0.5">
-                  <Label htmlFor="amount-depreciation" className={fieldLabelClass}>
+                  <Label
+                    htmlFor="amount-depreciation"
+                    className={fieldLabelClass}
+                  >
                     Monto depreciacion
                   </Label>
                   <Input
@@ -183,7 +204,10 @@ export function DepreciationFormSheet({
                     step="0.01"
                     value={form.amountDepreciation}
                     onChange={(event) =>
-                      onFormFieldChange("amountDepreciation", event.target.value)
+                      onFormFieldChange(
+                        "amountDepreciation",
+                        event.target.value,
+                      )
                     }
                     placeholder="Ej. 5000.00"
                     className={controlClass}
@@ -192,7 +216,10 @@ export function DepreciationFormSheet({
                 </div>
 
                 <div className="space-y-0.5">
-                  <Label htmlFor="accumulated-depreciation" className={fieldLabelClass}>
+                  <Label
+                    htmlFor="accumulated-depreciation"
+                    className={fieldLabelClass}
+                  >
                     Depreciacion acumulada
                   </Label>
                   <Input
@@ -202,7 +229,10 @@ export function DepreciationFormSheet({
                     step="0.01"
                     value={form.accumulatedDepreciation}
                     onChange={(event) =>
-                      onFormFieldChange("accumulatedDepreciation", event.target.value)
+                      onFormFieldChange(
+                        "accumulatedDepreciation",
+                        event.target.value,
+                      )
                     }
                     placeholder="Ej. 25000.00"
                     className={controlClass}
@@ -233,14 +263,20 @@ export function DepreciationFormSheet({
                 </div>
 
                 <div className="space-y-0.5">
-                  <Label htmlFor="depreciation-account" className={fieldLabelClass}>
+                  <Label
+                    htmlFor="depreciation-account"
+                    className={fieldLabelClass}
+                  >
                     Cuenta depreciacion
                   </Label>
                   <Input
                     id="depreciation-account"
                     value={form.depreciationAccount}
                     onChange={(event) =>
-                      onFormFieldChange("depreciationAccount", event.target.value)
+                      onFormFieldChange(
+                        "depreciationAccount",
+                        event.target.value,
+                      )
                     }
                     placeholder="Ej. 1200-001"
                     className={controlClass}
