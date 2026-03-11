@@ -8,11 +8,10 @@ import {
   ChevronsUpDown,
   Eye,
   Loader2,
-  MoreHorizontal,
   Pencil,
   Plus,
   Search,
-  Tag, // Icono representativo para Tipos de Activos
+  Tag,
   Trash2,
   XCircle,
 } from "lucide-react";
@@ -20,14 +19,8 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -37,7 +30,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -59,6 +51,12 @@ function getPageNumbers(currentPage: number, totalPages: number) {
     return currentPage - 2 + i;
   });
 }
+
+const STATUS_OPTIONS: { value: AssetTypeStatusFilter; label: string }[] = [
+  { value: "all", label: "Todos" },
+  { value: "active", label: "Activos" },
+  { value: "inactive", label: "Inactivos" },
+];
 
 type AssetTypesManagementCardProps = {
   statusFilter: AssetTypeStatusFilter;
@@ -129,7 +127,7 @@ export function AssetTypesManagementCard({
     <motion.div variants={fadeInUp} initial="initial" animate="animate">
       <Card className="overflow-hidden border-border/50 bg-card shadow-lg backdrop-blur-sm">
         {/* Título de la Sección */}
-        <div className="border-b border-border/30 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="border-b border-border/30 bg-linear-to-r from-primary/5 to-primary/10 px-3 py-2 sm:px-4 sm:py-2.5">
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             <h3 className="text-sm font-semibold text-foreground sm:text-base">
@@ -142,37 +140,46 @@ export function AssetTypesManagementCard({
         </div>
 
         {/* Panel de Filtros */}
-        <CardHeader className="border-b border-border/40 bg-gradient-to-r from-muted/30 to-muted/10 px-4 pt-2 pb-1 sm:px-6 sm:pt-3 sm:pb-2">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <Tabs
-              value={statusFilter}
-              onValueChange={(value) =>
-                onStatusFilterChange(value as AssetTypeStatusFilter)
-              }
-              className="w-full lg:w-auto shrink-0"
-            >
-              <TabsList className="grid h-9 w-full grid-cols-3 bg-background/60 p-1 lg:w-auto border shadow-sm">
-                <TabsTrigger className="text-xs" value="all">
-                  Todos
-                </TabsTrigger>
-                <TabsTrigger className="text-xs" value="active">
-                  Activos
-                </TabsTrigger>
-                <TabsTrigger className="text-xs" value="inactive">
-                  Inactivos
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+        <div className="border-b border-border/40 bg-linear-to-r from-muted/30 to-muted/10 px-3 py-2 sm:px-4">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            <div className="relative flex h-8 w-full rounded-lg bg-muted/60 p-0.5 shadow-inner ring-1 ring-border/50 lg:w-auto">
+              {STATUS_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => onStatusFilterChange(opt.value)}
+                  className={cn(
+                    "relative z-10 flex-1 rounded-md px-3.5 text-[11px] font-semibold transition-all duration-200 lg:flex-initial",
+                    statusFilter === opt.value
+                      ? "text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {statusFilter === opt.value && (
+                    <motion.div
+                      layoutId="asset-type-status-pill"
+                      className="absolute inset-0 rounded-md bg-primary shadow-sm"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-10">{opt.label}</span>
+                </button>
+              ))}
+            </div>
 
             <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto lg:justify-end">
-              <div className="relative w-full sm:w-60">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <div className="relative w-full sm:w-56">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground/70" />
                 <Input
                   type="search"
                   placeholder="Buscar tipo..."
                   value={searchQuery}
                   onChange={(event) => onSearchQueryChange(event.target.value)}
-                  className="h-9 bg-background pl-8 shadow-sm transition-colors focus-visible:ring-1 focus-visible:ring-primary/30"
+                  className="h-8 bg-background pl-7 text-xs shadow-sm transition-colors focus-visible:ring-1 focus-visible:ring-primary/30"
                   disabled={isLoading}
                 />
               </div>
@@ -181,14 +188,14 @@ export function AssetTypesManagementCard({
                 onClick={onCreate}
                 disabled={isSaving}
                 size="sm"
-                className="h-9 w-full sm:w-auto shadow-sm active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90"
+                className="h-8 w-full rounded-lg sm:w-auto shadow-sm active:scale-[0.98] transition-transform font-semibold"
               >
-                <Plus className="mr-1.5 h-4 w-4" />
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
                 Nuevo Tipo
               </Button>
             </div>
           </div>
-        </CardHeader>
+        </div>
 
         <CardContent className="p-0">
           {/* Panel de Acciones Masivas (Flotante) */}
@@ -266,7 +273,8 @@ export function AssetTypesManagementCard({
                 No hay tipos de activos
               </p>
               <p className="mt-1 text-xs text-muted-foreground max-w-62.5">
-                Ajusta los filtros de búsqueda o crea un nuevo tipo para comenzar.
+                Ajusta los filtros de búsqueda o crea un nuevo tipo para
+                comenzar.
               </p>
             </div>
           ) : (
@@ -290,7 +298,7 @@ export function AssetTypesManagementCard({
               <div className="hidden w-full overflow-x-auto md:block">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-b-border/50 bg-gradient-to-r from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30">
+                    <TableRow className="border-b-border/50 bg-linear-to-r from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30">
                       <TableHead className="w-10 pl-5 pr-2">
                         <Checkbox
                           checked={allSelectedInPage}
@@ -303,7 +311,8 @@ export function AssetTypesManagementCard({
                           onClick={() => onSort("name")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Nombre <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
+                          Nombre{" "}
+                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
                       <TableHead className="h-10 px-2">
@@ -311,7 +320,8 @@ export function AssetTypesManagementCard({
                           onClick={() => onSort("purchaseAccount")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Cta. Compra <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
+                          Cta. Compra{" "}
+                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
                       <TableHead className="h-10 px-2">
@@ -319,7 +329,8 @@ export function AssetTypesManagementCard({
                           onClick={() => onSort("depreciationAccount")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Cta. Depreciación <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
+                          Cta. Depreciación{" "}
+                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
                       <TableHead className="h-10 px-2">
@@ -327,7 +338,8 @@ export function AssetTypesManagementCard({
                           onClick={() => onSort("status")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Estado <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
+                          Estado{" "}
+                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
                       <TableHead className="h-10 px-5 text-right text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -352,27 +364,25 @@ export function AssetTypesManagementCard({
                               isChecked && "bg-primary/8 hover:bg-primary/12",
                             )}
                           >
-                            <TableCell className="w-10 pl-5 pr-2 py-3">
+                            <TableCell className="w-10 pl-5 pr-2 py-1.5">
                               <Checkbox
                                 checked={isChecked}
-                                onCheckedChange={() =>
-                                  onToggleSelectRow(at.id)
-                                }
+                                onCheckedChange={() => onToggleSelectRow(at.id)}
                                 className="rounded-[4px] border-muted-foreground/40 data-[state=checked]:border-primary"
                               />
                             </TableCell>
-                            <TableCell className="px-2 py-3">
+                            <TableCell className="px-2 py-1.5">
                               <span className="text-sm font-semibold leading-tight text-foreground">
                                 {at.name}
                               </span>
                             </TableCell>
-                            <TableCell className="px-2 py-3 font-mono text-xs font-medium text-muted-foreground">
+                            <TableCell className="px-2 py-1.5 font-mono text-xs font-medium text-muted-foreground">
                               {at.purchaseAccount || "-"}
                             </TableCell>
-                            <TableCell className="px-2 py-3 font-mono text-xs font-medium text-muted-foreground">
+                            <TableCell className="px-2 py-1.5 font-mono text-xs font-medium text-muted-foreground">
                               {at.depreciationAccount || "-"}
                             </TableCell>
-                            <TableCell className="px-2 py-3">
+                            <TableCell className="px-2 py-1.5">
                               <div className="flex items-center gap-2">
                                 <div
                                   className={cn(
@@ -387,20 +397,20 @@ export function AssetTypesManagementCard({
                                 </span>
                               </div>
                             </TableCell>
-                            <TableCell className="px-5 py-3 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
+                            <TableCell className="px-5 py-1.5 text-right">
+                              <div className="flex items-center justify-end gap-1">
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="icon"
                                       onClick={() => onView(at)}
-                                      className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+                                      className="h-7 w-7 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
                                     >
-                                      <Eye className="h-4 w-4" />
+                                      <Eye className="h-3.5 w-3.5" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent className="text-xs">
+                                  <TooltipContent className="text-[10px]">
                                     Ver detalle
                                   </TooltipContent>
                                 </Tooltip>
@@ -412,37 +422,32 @@ export function AssetTypesManagementCard({
                                       size="icon"
                                       onClick={() => onEdit(at)}
                                       disabled={isSaving}
-                                      className="h-8 w-8 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-all"
+                                      className="h-7 w-7 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-all"
                                     >
-                                      <Pencil className="h-4 w-4" />
+                                      <Pencil className="h-3.5 w-3.5" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent className="text-xs">
+                                  <TooltipContent className="text-[10px]">
                                     Editar
                                   </TooltipContent>
                                 </Tooltip>
 
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
-                                    >
-                                      <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end" className="w-44">
-                                    <DropdownMenuItem
-                                      className="text-xs text-rose-600 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/50"
                                       onClick={() => onDelete(at)}
                                       disabled={isSaving}
+                                      className="h-7 w-7 text-muted-foreground hover:bg-rose-100 hover:text-rose-700 dark:hover:bg-rose-950/50 dark:hover:text-rose-400 transition-colors"
                                     >
-                                      <Trash2 className="mr-2 h-4 w-4 opacity-70" />{" "}
-                                      Eliminar
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="text-[10px]">
+                                    Eliminar
+                                  </TooltipContent>
+                                </Tooltip>
                               </div>
                             </TableCell>
                           </motion.tr>
@@ -467,69 +472,66 @@ export function AssetTypesManagementCard({
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2, delay: index * 0.02 }}
                         className={cn(
-                          "bg-card p-4 transition-all hover:bg-muted/30",
-                          isChecked && "bg-primary/8 border-l-2 border-l-primary",
+                          "bg-card px-3 py-2.5 transition-all hover:bg-muted/30",
+                          isChecked &&
+                            "bg-primary/8 border-l-2 border-l-primary",
                         )}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-center gap-2.5">
                           <Checkbox
                             checked={isChecked}
-                            onCheckedChange={() =>
-                              onToggleSelectRow(at.id)
-                            }
-                            className="mt-1 rounded-[4px]"
+                            onCheckedChange={() => onToggleSelectRow(at.id)}
+                            className="h-4 w-4 rounded-[3px] shrink-0"
                           />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center justify-between gap-2">
                               <div className="truncate">
-                                <p className="text-sm font-semibold text-foreground truncate">
+                                <p className="text-xs font-semibold text-foreground truncate">
                                   {at.name}
                                 </p>
-                                <p className="text-xs font-mono text-muted-foreground mt-0.5 truncate">
-                                  C.C: {at.purchaseAccount || "-"} | C.D: {at.depreciationAccount || "-"}
+                                <p className="text-[10px] font-mono text-muted-foreground mt-0.5 truncate">
+                                  C.C: {at.purchaseAccount || "-"} | C.D:{" "}
+                                  {at.depreciationAccount || "-"}
                                 </p>
                               </div>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 shrink-0 -mr-2 text-muted-foreground hover:bg-muted"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-44">
-                                  <DropdownMenuItem
-                                    onClick={() => onView(at)}
-                                    className="text-xs"
-                                  >
-                                    <Eye className="mr-2 h-4 w-4" /> Ver detalle
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => onEdit(at)}
-                                    className="text-xs"
-                                  >
-                                    <Pencil className="mr-2 h-4 w-4" /> Editar
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="text-xs text-rose-600 focus:text-rose-600"
-                                    onClick={() => onDelete(at)}
-                                  >
-                                    <Trash2 className="mr-2 h-4 w-4" /> Eliminar
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                              <div className="flex items-center -mr-1.5 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onView(at)}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-muted"
+                                >
+                                  <Eye className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onEdit(at)}
+                                  disabled={isSaving}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onDelete(at)}
+                                  disabled={isSaving}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-rose-100 hover:text-rose-700"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
                             </div>
 
-                            <div className="mt-3 flex flex-wrap items-center gap-2">
-                              <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
                                 <div
                                   className={cn(
-                                    "h-2 w-2 rounded-full",
+                                    "h-1.5 w-1.5 rounded-full",
                                     at.status
-                                      ? "bg-emerald-500 ring-2 ring-emerald-500/20"
-                                      : "bg-amber-500 ring-2 ring-amber-500/20",
+                                      ? "bg-emerald-500 ring-1 ring-emerald-500/20"
+                                      : "bg-amber-500 ring-1 ring-amber-500/20",
                                   )}
                                 />
                                 {at.status ? "Activo" : "Inactivo"}

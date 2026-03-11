@@ -14,8 +14,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { EmployeeFormSheet } from "./components/employee-form-sheet";
 import { EmployeesManagementCard } from "./components/employees-management-card";
 import { EmployeeDetailDialog } from "./components/employee-detail-dialog";
-import { EmployeesHeader } from "./components/employees-header";
-import { EmployeesStats } from "./components/employees-stats";
 import type {
   Department,
   Employee,
@@ -471,30 +469,11 @@ export default function EmployeesPage() {
   return (
     <TooltipProvider>
       <motion.div
-        className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 px-3 py-4 sm:px-4 sm:py-5"
+        className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 p-0"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.4 }}
       >
-        <EmployeesHeader
-          canCreate={Boolean(departments.length)}
-          onCreate={openCreateSheet}
-        />
-
-        <div className="mb-6 sm:mb-8">
-          <EmployeesStats
-            stats={{
-              total: employees.length,
-              active: employees.filter((e) => e.status).length,
-              inactive: employees.filter((e) => !e.status).length,
-              byDepartment: departments.map((dept) => ({
-                ...dept,
-                count: employees.filter((e) => e.departmentId === dept.id).length,
-              })),
-            }}
-          />
-        </div>
-
         <EmployeesManagementCard
           statusFilter={statusFilter}
           onStatusFilterChange={(value) => {

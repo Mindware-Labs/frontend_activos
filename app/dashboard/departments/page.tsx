@@ -7,8 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DepartmentsManagementCard } from "./components/departments-management-card";
 import { DepartmentFormSheet } from "./components/department-form-sheet";
 import { DepartmentDetailDialog } from "./components/department-detail-dialog";
-import { DepartmentsHeader } from "./components/departments-header";
-import { DepartmentsStats } from "./components/departments-stats";
 import { DepartmentsAlert } from "./components/departments-alert";
 import type {
   Department,
@@ -16,8 +14,6 @@ import type {
   DepartmentStatusFilter,
   SortDirection,
   SortableDepartmentKey,
-  DepartmentStats,
-  SetDepartmentFormField,
 } from "./components/types";
 
 const API_BASE_URL = (
@@ -91,14 +87,19 @@ export default function DepartmentsPage() {
   const [, setIsRefreshing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
+  const [editingDepartment, setEditingDepartment] = useState<Department | null>(
+    null,
+  );
   const [form, setForm] = useState<DepartmentFormState>(EMPTY_FORM);
-  const [viewingDepartment, setViewingDepartment] = useState<Department | null>(null);
+  const [viewingDepartment, setViewingDepartment] = useState<Department | null>(
+    null,
+  );
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [statusFilter, setStatusFilter] = useState<DepartmentStatusFilter>("all");
+  const [statusFilter, setStatusFilter] =
+    useState<DepartmentStatusFilter>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState<{
@@ -109,8 +110,6 @@ export default function DepartmentsPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [stats, setStats] = useState<DepartmentStats>({ total: 0, active: 0, inactive: 0 });
-
   const loadData = useCallback(async (showRefreshing = false) => {
     if (showRefreshing) {
       setIsRefreshing(true);
@@ -119,11 +118,9 @@ export default function DepartmentsPage() {
     }
 
     try {
-      const res = await apiRequest<PaginatedResponse<Department>>("/departments");
+      const res =
+        await apiRequest<PaginatedResponse<Department>>("/departments");
       setDepartments(res.data);
-      const total = res.total;
-      const active = res.data.filter((d) => d.status).length;
-      setStats({ total, active, inactive: total - active });
     } catch (error) {
       sileo.error({
         title: "Error",
@@ -159,14 +156,16 @@ export default function DepartmentsPage() {
     const filtered = departments.filter((dept) => {
       const matchesSearch =
         dept.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (dept.description || "").toLowerCase().includes(searchQuery.toLowerCase());
+        (dept.description || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
 
       const matchesStatus =
         statusFilter === "all"
           ? true
           : statusFilter === "active"
-          ? dept.status
-          : !dept.status;
+            ? dept.status
+            : !dept.status;
 
       return matchesSearch && matchesStatus;
     });
@@ -201,7 +200,9 @@ export default function DepartmentsPage() {
     return filteredAndSortedDepartments.slice(start, start + itemsPerPage);
   }, [filteredAndSortedDepartments, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(filteredAndSortedDepartments.length / itemsPerPage);
+  const totalPages = Math.ceil(
+    filteredAndSortedDepartments.length / itemsPerPage,
+  );
 
   function setFormField<K extends keyof DepartmentFormState>(
     field: K,
@@ -259,7 +260,9 @@ export default function DepartmentsPage() {
       });
 
       sileo.success({
-        title: editingDepartment ? "Departamento actualizado" : "Departamento creado",
+        title: editingDepartment
+          ? "Departamento actualizado"
+          : "Departamento creado",
         description: editingDepartment
           ? "Los cambios se guardaron correctamente."
           : "El departamento fue registrado correctamente.",
@@ -275,7 +278,9 @@ export default function DepartmentsPage() {
   }
 
   async function handleDelete(department: Department) {
-    const confirmed = window.confirm(`Eliminar departamento ${department.name}?`);
+    const confirmed = window.confirm(
+      `Eliminar departamento ${department.name}?`,
+    );
     if (!confirmed) return;
 
     setIsSaving(true);
@@ -397,16 +402,12 @@ export default function DepartmentsPage() {
 
   return (
     <TooltipProvider>
-      <motion.div className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 px-3 py-4 sm:px-4 sm:py-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-        <DepartmentsHeader
-          isRefreshing={isLoading}
-          canCreate={true}
-          onRefresh={() => void loadData(true)}
-          onCreate={openCreateSheet}
-        />
-
-        <DepartmentsStats stats={stats} />
-
+      <motion.div
+        className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 p-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <DepartmentsAlert show={departments.length === 0 && !isLoading} />
 
         <DepartmentsManagementCard
@@ -464,4 +465,3 @@ export default function DepartmentsPage() {
     </TooltipProvider>
   );
 }
-

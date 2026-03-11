@@ -1,27 +1,31 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { Loader2 } from "lucide-react";
+import { Building2, Loader2, Shapes } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { EmployeeDatePicker } from "../../employees/components/employee-date-picker";
 import type {
-  Department,
   AssetType,
+  Department,
   FixedAsset,
   FixedAssetFormState,
   SetFixedAssetFormField,
@@ -53,82 +57,82 @@ export function FixedAssetFormSheet({
   onCancel,
 }: FixedAssetFormSheetProps) {
   const isEditMode = Boolean(editingAsset);
+  const sectionTitleClass =
+    "text-xs font-medium uppercase tracking-[0.14em] text-gray-500";
+  const fieldLabelClass = "text-xs font-medium text-gray-500";
+  const controlClass =
+    "h-9 w-full min-w-0 rounded-xl border-gray-200 bg-white px-3 text-sm text-gray-900 shadow-none transition-all focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/20";
+  const iconClass =
+    "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 transition-colors";
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-[440px] border-l-0 sm:border-l shadow-2xl">
-        <SheetHeader className="relative overflow-hidden border-b bg-gradient-to-br from-emerald-500/10 via-background to-background px-5 py-5 text-left z-10">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-10 -mt-10" />
-   
-          <SheetTitle className="text-xl font-bold tracking-tight">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-1rem)] max-w-xl flex-col gap-0 overflow-hidden rounded-2xl border border-gray-200 bg-white p-0 sm:w-full">
+        <DialogHeader className="space-y-0.5 border-b border-gray-100 bg-white px-4 py-3 text-left">
+          <DialogTitle className="text-sm font-semibold tracking-tight text-gray-900 sm:text-base">
             {isEditMode ? "Editar Activo Fijo" : "Registrar Activo Fijo"}
-          </SheetTitle>
-          <SheetDescription className="text-xs mt-1">
+          </DialogTitle>
+          <DialogDescription className="text-xs leading-snug text-gray-500">
             {isEditMode
               ? "Actualiza los datos del activo fijo."
-              : "Completa los campos para añadir un nuevo activo fijo."}
-          </SheetDescription>
-        </SheetHeader>
+              : "Completa los campos para registrar un nuevo activo fijo."}
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto bg-muted/10">
-          <form
-            id="fixed-asset-form"
-            onSubmit={onSubmit}
-            className="flex flex-col gap-4 p-5"
-          >
-            <section className="space-y-3 rounded-xl border bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
-                Información General
-              </h3>
+        <div className="flex-1 overflow-y-auto bg-white">
+          <form id="fixed-asset-form" onSubmit={onSubmit} className="space-y-3 p-4">
+            <section className="space-y-2.5">
+              <h3 className={sectionTitleClass}>Informacion General</h3>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="asset-name" className="text-xs font-semibold">
+              <div className="space-y-0.5">
+                <Label htmlFor="asset-name" className={fieldLabelClass}>
                   Nombre
                 </Label>
                 <Input
                   id="asset-name"
                   value={form.name}
-                  onChange={(e) => onFormFieldChange("name", e.target.value)}
-                  placeholder="Activo fijo..."
-                  className="h-9 text-sm"
+                  onChange={(event) => onFormFieldChange("name", event.target.value)}
+                  placeholder="Ej. Impresora laser"
+                  className={controlClass}
                   required
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="asset-desc" className="text-xs font-semibold">
-                  Descripción
+              <div className="space-y-0.5">
+                <Label htmlFor="asset-desc" className={fieldLabelClass}>
+                  Descripcion
                 </Label>
                 <Input
                   id="asset-desc"
                   value={form.description}
-                  onChange={(e) => onFormFieldChange("description", e.target.value)}
-                  placeholder="10 caracteres min"
-                  className="h-9 text-sm"
+                  onChange={(event) =>
+                    onFormFieldChange("description", event.target.value)
+                  }
+                  placeholder="Descripcion corta"
+                  className={controlClass}
                 />
               </div>
             </section>
 
-            <section className="space-y-3 rounded-xl border bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
-                Datos de Registro
-              </h3>
+            <section className="space-y-2.5 border-t border-gray-100 pt-3">
+              <h3 className={sectionTitleClass}>Datos de Registro</h3>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="asset-registration" className="text-xs font-semibold">
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="asset-registration" className={fieldLabelClass}>
                     Fecha de registro
                   </Label>
                   <EmployeeDatePicker
                     id="asset-registration"
                     value={form.registrationDate}
                     disabled={isSaving}
-                    onChange={(value: string) => onFormFieldChange("registrationDate", value)}
+                    onChange={(value) => onFormFieldChange("registrationDate", value)}
+                    className={controlClass}
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="asset-purchase" className="text-xs font-semibold">
+                <div className="space-y-0.5">
+                  <Label htmlFor="asset-purchase" className={fieldLabelClass}>
                     Valor compra
                   </Label>
                   <Input
@@ -137,16 +141,16 @@ export function FixedAssetFormSheet({
                     min="0"
                     step="100"
                     value={form.purchaseValue}
-                    onChange={(e) => onFormFieldChange("purchaseValue", e.target.value)}
-                    className="h-9 text-sm"
+                    onChange={(event) =>
+                      onFormFieldChange("purchaseValue", event.target.value)
+                    }
+                    className={controlClass}
                     required
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="asset-residual" className="text-xs font-semibold">
+                <div className="space-y-0.5">
+                  <Label htmlFor="asset-residual" className={fieldLabelClass}>
                     Valor residual
                   </Label>
                   <Input
@@ -155,15 +159,17 @@ export function FixedAssetFormSheet({
                     min="0"
                     step="100"
                     value={form.residualValue}
-                    onChange={(e) => onFormFieldChange("residualValue", e.target.value)}
-                    className="h-9 text-sm"
+                    onChange={(event) =>
+                      onFormFieldChange("residualValue", event.target.value)
+                    }
+                    className={controlClass}
                     required
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="asset-life" className="text-xs font-semibold">
-                    Vida útil (meses)
+                <div className="space-y-0.5">
+                  <Label htmlFor="asset-life" className={fieldLabelClass}>
+                    Vida util (meses)
                   </Label>
                   <Input
                     id="asset-life"
@@ -171,101 +177,104 @@ export function FixedAssetFormSheet({
                     min="0"
                     step="1"
                     value={form.usefulLifeMonths}
-                    onChange={(e) => onFormFieldChange("usefulLifeMonths", e.target.value)}
-                    className="h-9 text-sm"
+                    onChange={(event) =>
+                      onFormFieldChange("usefulLifeMonths", event.target.value)
+                    }
+                    className={controlClass}
                   />
                 </div>
               </div>
             </section>
 
-            <section className="space-y-3 rounded-xl border bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
-                Clasificación
-              </h3>
+            <section className="space-y-2.5 border-t border-gray-100 pt-3">
+              <h3 className={sectionTitleClass}>Clasificacion</h3>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Departamento</Label>
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <div className="space-y-0.5">
+                  <Label className={fieldLabelClass}>Departamento</Label>
                   <Select
                     value={form.departmentId}
                     onValueChange={(value) => onFormFieldChange("departmentId", value)}
                     required
                   >
-                    <SelectTrigger className="h-9 text-sm bg-background focus:ring-1 focus:ring-primary/30">
-                      <SelectValue placeholder="Selecciona..." />
-                    </SelectTrigger>
+                    <div className="group relative">
+                      <Building2
+                        className={`${iconClass} z-10 group-focus-within:text-emerald-500/80`}
+                      />
+                      <SelectTrigger className={`${controlClass} pl-10`}>
+                        <SelectValue placeholder="Selecciona un departamento" />
+                      </SelectTrigger>
+                    </div>
                     <SelectContent>
-                      {departments.map((dept) => (
-                        <SelectItem key={dept.id} value={String(dept.id)}>
-                          {dept.name}
+                      {departments.map((department) => (
+                        <SelectItem key={department.id} value={String(department.id)}>
+                          {department.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Tipo de activo</Label>
+                <div className="space-y-0.5">
+                  <Label className={fieldLabelClass}>Tipo de activo</Label>
                   <Select
                     value={form.assetTypeId}
                     onValueChange={(value) => onFormFieldChange("assetTypeId", value)}
                     required
                   >
-                    <SelectTrigger className="h-9 text-sm bg-background focus:ring-1 focus:ring-primary/30">
-                      <SelectValue placeholder="Selecciona..." />
-                    </SelectTrigger>
+                    <div className="group relative">
+                      <Shapes
+                        className={`${iconClass} z-10 group-focus-within:text-emerald-500/80`}
+                      />
+                      <SelectTrigger className={`${controlClass} pl-10`}>
+                        <SelectValue placeholder="Selecciona un tipo" />
+                      </SelectTrigger>
+                    </div>
                     <SelectContent>
-                      {assetTypes.filter((type) => type.status === true).map((type) => (
-                        <SelectItem key={type.id} value={String(type.id)}>
-                          {type.name}
-                        </SelectItem>
-                      ))}
+                      {assetTypes
+                        .filter((assetType) => assetType.status)
+                        .map((assetType) => (
+                          <SelectItem key={assetType.id} value={String(assetType.id)}>
+                            {assetType.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
             </section>
 
-            {/* Sección Opcional: Estado - Solo visible en edición */}
             {isEditMode && (
-              <section className="rounded-xl border border-emerald-200/50 bg-emerald-50/50 dark:border-emerald-800/30 dark:bg-emerald-950/20 p-4 transition-colors">
-                <div className="flex items-center justify-between gap-3">
+              <section className="space-y-1.5 border-t border-gray-100 pt-3">
+                <h3 className={sectionTitleClass}>Estado</h3>
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 px-3 py-2">
                   <div className="space-y-0.5">
-                    <Label className="text-sm font-semibold">
+                    <Label className="text-xs font-medium text-gray-600">
                       Estado en el sistema
                     </Label>
-                    <p className="text-[11px] text-muted-foreground">
-                      Activa o inactiva el acceso y visibilidad del activo fijo.
+                    <p className="text-[11px] text-gray-500">
+                      Activa o inactiva el activo fijo.
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={cn(
-                      "text-xs font-medium transition-colors",
-                      form.status ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
-                    )}>
-                      {form.status ? "Activo" : "Inactivo"}
-                    </span>
-                    <Switch
-                      checked={form.status}
-                      onCheckedChange={(checked) =>
-                        onFormFieldChange("status", checked)
-                      }
-                      className="data-[state=checked]:bg-emerald-500"
-                    />
-                  </div>
+                  <Switch
+                    checked={form.status}
+                    onCheckedChange={(checked) => onFormFieldChange("status", checked)}
+                    className="data-[state=checked]:bg-emerald-500"
+                  />
                 </div>
               </section>
             )}
           </form>
         </div>
 
-        <SheetFooter className="border-t bg-background/80 px-5 py-4 backdrop-blur-md z-10">
-          <div className="flex w-full items-center gap-3 sm:justify-end">
+        <DialogFooter className="border-t border-gray-100 bg-white px-4 py-2.5">
+          <div className="flex w-full items-center justify-center gap-2.5">
             <Button
+              type="button"
               variant="outline"
               onClick={onCancel}
               disabled={isSaving}
-              className="h-10 flex-1 sm:flex-none px-4 font-medium"
+              className="h-9 min-w-32 rounded-xl border-gray-200 bg-white px-4 text-xs font-medium text-gray-600 shadow-none hover:bg-gray-50 hover:text-gray-700"
             >
               Cancelar
             </Button>
@@ -273,14 +282,14 @@ export function FixedAssetFormSheet({
               type="submit"
               form="fixed-asset-form"
               disabled={isSaving}
-              className="h-10 flex-1 sm:flex-none px-6 shadow-md transition-all active:scale-[0.98] font-medium"
+              className="h-9 min-w-32 rounded-xl bg-emerald-600 px-5 text-xs font-medium text-white shadow-none transition-colors hover:bg-emerald-700"
             >
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEditMode ? "Guardar" : "Crear"}
             </Button>
           </div>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

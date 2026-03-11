@@ -1,10 +1,17 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { Loader2 } from "lucide-react";
+import { Building2, Loader2 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -14,19 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import { EmployeeDatePicker } from "../../employees/components/employee-date-picker";
 import type {
-  FixedAsset,
   DepreciationCalculation,
   DepreciationFormState,
+  FixedAsset,
   SetDepreciationFormField,
 } from "./types";
 
@@ -54,217 +53,213 @@ export function DepreciationFormSheet({
   onCancel,
 }: DepreciationFormSheetProps) {
   const isEditMode = Boolean(editingDepreciation);
+  const sectionTitleClass =
+    "text-xs font-medium uppercase tracking-[0.14em] text-gray-500";
+  const fieldLabelClass = "text-xs font-medium text-gray-500";
+  const controlClass =
+    "h-9 w-full min-w-0 rounded-xl border-gray-200 bg-white px-3 text-sm text-gray-900 shadow-none transition-all focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/20";
+  const iconClass =
+    "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 transition-colors";
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-110 border-l-0 sm:border-l shadow-2xl overflow-y-auto">
-        <SheetHeader className="relative overflow-hidden border-b bg-linear-to-br from-emerald-500/10 via-background to-background px-5 py-5 text-left z-10">
-          <div className="space-y-1.5">
-            <SheetTitle className="text-lg sm:text-xl">
-              {isEditMode
-                ? "Editar Depreciación"
-                : "Crear Nueva Depreciación"}
-            </SheetTitle>
-            <SheetDescription className="text-xs sm:text-sm">
-              {isEditMode
-                ? "Actualiza los detalles del cálculo de depreciación."
-                : "Ingresa los datos del nuevo cálculo de depreciación."}
-            </SheetDescription>
-            {isEditMode && editingDepreciation && (
-              <Badge variant="secondary" className="w-fit text-xs mt-2">
-                ID: {editingDepreciation.id}
-              </Badge>
-            )}
-          </div>
-        </SheetHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-1rem)] max-w-xl flex-col gap-0 overflow-hidden rounded-2xl border border-gray-200 bg-white p-0 sm:w-full">
+        <DialogHeader className="space-y-0.5 border-b border-gray-100 bg-white px-4 py-3 text-left">
+          <DialogTitle className="text-sm font-semibold tracking-tight text-gray-900 sm:text-base">
+            {isEditMode ? "Editar Depreciacion" : "Registrar Depreciacion"}
+          </DialogTitle>
+          <DialogDescription className="text-xs leading-snug text-gray-500">
+            {isEditMode
+              ? "Actualiza los datos del calculo de depreciacion."
+              : "Completa los campos para registrar un nuevo calculo de depreciacion."}
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto">
-          <form
-            id="depreciation-form"
-            onSubmit={onSubmit}
-            className="space-y-4 border-b border-border/20 p-5"
-          >
-            {/* Año del Proceso */}
-            <div className="space-y-2">
-              <Label htmlFor="processYear" className="text-xs font-semibold">
-                Año del Proceso
-              </Label>
-              <Input
-                id="processYear"
-                type="number"
-                min="1900"
-                max="2100"
-                placeholder="Ej: 2024"
-                value={form.processYear}
-                onChange={(e) => onFormFieldChange("processYear", e.target.value)}
-                disabled={isSaving}
-                className="h-9 text-sm"
-              />
-            </div>
+        <div className="flex-1 overflow-y-auto bg-white">
+          <form id="depreciation-form" onSubmit={onSubmit} className="space-y-3 p-4">
+            <section className="space-y-2.5">
+              <h3 className={sectionTitleClass}>Proceso</h3>
 
-            {/* Mes del Proceso */}
-            <div className="space-y-2">
-              <Label htmlFor="processMonth" className="text-xs font-semibold">
-                Mes del Proceso
-              </Label>
-              <Select
-                value={form.processMonth}
-                onValueChange={(value) =>
-                  onFormFieldChange("processMonth", value)
-                }
-                disabled={isSaving}
-              >
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue placeholder="Seleccionar mes..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                    <SelectItem key={month} value={String(month)}>
-                      {new Date(2024, month - 1).toLocaleDateString("es-DO", {
-                        month: "long",
-                      })}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                <div className="space-y-0.5">
+                  <Label htmlFor="process-year" className={fieldLabelClass}>
+                    Ano
+                  </Label>
+                  <Input
+                    id="process-year"
+                    type="number"
+                    min="1900"
+                    max="2100"
+                    value={form.processYear}
+                    onChange={(event) =>
+                      onFormFieldChange("processYear", event.target.value)
+                    }
+                    placeholder="Ej. 2026"
+                    className={controlClass}
+                    disabled={isSaving}
+                  />
+                </div>
 
-            {/* Fecha del Proceso */}
-            <div className="space-y-2">
-              <Label htmlFor="processDate" className="text-xs font-semibold">
-                Fecha del Proceso
-              </Label>
-              <Input
-                id="processDate"
-                type="date"
-                value={form.processDate}
-                onChange={(e) => onFormFieldChange("processDate", e.target.value)}
-                disabled={isSaving}
-                className="h-9 text-sm"
-              />
-            </div>
+                <div className="space-y-0.5">
+                  <Label htmlFor="process-month" className={fieldLabelClass}>
+                    Mes
+                  </Label>
+                  <Select
+                    value={form.processMonth}
+                    onValueChange={(value) => onFormFieldChange("processMonth", value)}
+                    disabled={isSaving}
+                  >
+                    <SelectTrigger id="process-month" className={controlClass}>
+                      <SelectValue placeholder="Selecciona..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 12 }, (_, index) => index + 1).map((month) => (
+                        <SelectItem key={month} value={String(month)}>
+                          {new Date(2026, month - 1).toLocaleDateString("es-DO", {
+                            month: "long",
+                          })}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Activo Fijo */}
-            <div className="space-y-2">
-              <Label htmlFor="fixedAssetId" className="text-xs font-semibold">
-                Activo Fijo
-              </Label>
-              <Select
-                value={form.fixedAssetId}
-                onValueChange={(value) =>
-                  onFormFieldChange("fixedAssetId", value)
-                }
-                disabled={isSaving}
-              >
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue placeholder="Seleccionar activo..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {fixedAssets.map((asset) => (
-                    <SelectItem key={asset.id} value={String(asset.id)}>
-                      {asset.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <div className="space-y-0.5">
+                  <Label htmlFor="process-date" className={fieldLabelClass}>
+                    Fecha
+                  </Label>
+                  <EmployeeDatePicker
+                    id="process-date"
+                    value={form.processDate}
+                    disabled={isSaving}
+                    onChange={(value) => onFormFieldChange("processDate", value)}
+                    className={controlClass}
+                  />
+                </div>
+              </div>
+            </section>
 
-            {/* Monto Depreciación */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="amountDepreciation"
-                className="text-xs font-semibold"
-              >
-                Monto Depreciación
-              </Label>
-              <Input
-                id="amountDepreciation"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Ej: 5000.00"
-                value={form.amountDepreciation}
-                onChange={(e) =>
-                  onFormFieldChange("amountDepreciation", e.target.value)
-                }
-                disabled={isSaving}
-                className="h-9 text-sm"
-              />
-            </div>
+            <section className="space-y-2.5 border-t border-gray-100 pt-3">
+              <h3 className={sectionTitleClass}>Activo</h3>
 
-            {/* Depreciación Acumulada */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="accumulatedDepreciation"
-                className="text-xs font-semibold"
-              >
-                Depreciación Acumulada
-              </Label>
-              <Input
-                id="accumulatedDepreciation"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Ej: 25000.00"
-                value={form.accumulatedDepreciation}
-                onChange={(e) =>
-                  onFormFieldChange("accumulatedDepreciation", e.target.value)
-                }
-                disabled={isSaving}
-                className="h-9 text-sm"
-              />
-            </div>
+              <div className="space-y-0.5">
+                <Label className={fieldLabelClass}>Activo fijo</Label>
+                <Select
+                  value={form.fixedAssetId}
+                  onValueChange={(value) => onFormFieldChange("fixedAssetId", value)}
+                  disabled={isSaving}
+                >
+                  <div className="group relative">
+                    <Building2
+                      className={`${iconClass} z-10 group-focus-within:text-emerald-500/80`}
+                    />
+                    <SelectTrigger className={`${controlClass} pl-10`}>
+                      <SelectValue placeholder="Selecciona un activo" />
+                    </SelectTrigger>
+                  </div>
+                  <SelectContent>
+                    {fixedAssets.map((asset) => (
+                      <SelectItem key={asset.id} value={String(asset.id)}>
+                        {asset.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </section>
 
-            {/* Cuenta de Compra */}
-            <div className="space-y-2">
-              <Label htmlFor="purchaseAccount" className="text-xs font-semibold">
-                Cuenta de Compra
-              </Label>
-              <Input
-                id="purchaseAccount"
-                type="text"
-                placeholder="Ej: 1100-001"
-                value={form.purchaseAccount}
-                onChange={(e) =>
-                  onFormFieldChange("purchaseAccount", e.target.value)
-                }
-                disabled={isSaving}
-                className="h-9 text-sm"
-              />
-            </div>
+            <section className="space-y-2.5 border-t border-gray-100 pt-3">
+              <h3 className={sectionTitleClass}>Valores</h3>
 
-            {/* Cuenta de Depreciación */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="depreciationAccount"
-                className="text-xs font-semibold"
-              >
-                Cuenta de Depreciación
-              </Label>
-              <Input
-                id="depreciationAccount"
-                type="text"
-                placeholder="Ej: 1200-001"
-                value={form.depreciationAccount}
-                onChange={(e) =>
-                  onFormFieldChange("depreciationAccount", e.target.value)
-                }
-                disabled={isSaving}
-                className="h-9 text-sm"
-              />
-            </div>
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="amount-depreciation" className={fieldLabelClass}>
+                    Monto depreciacion
+                  </Label>
+                  <Input
+                    id="amount-depreciation"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.amountDepreciation}
+                    onChange={(event) =>
+                      onFormFieldChange("amountDepreciation", event.target.value)
+                    }
+                    placeholder="Ej. 5000.00"
+                    className={controlClass}
+                    disabled={isSaving}
+                  />
+                </div>
+
+                <div className="space-y-0.5">
+                  <Label htmlFor="accumulated-depreciation" className={fieldLabelClass}>
+                    Depreciacion acumulada
+                  </Label>
+                  <Input
+                    id="accumulated-depreciation"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.accumulatedDepreciation}
+                    onChange={(event) =>
+                      onFormFieldChange("accumulatedDepreciation", event.target.value)
+                    }
+                    placeholder="Ej. 25000.00"
+                    className={controlClass}
+                    disabled={isSaving}
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-2.5 border-t border-gray-100 pt-3">
+              <h3 className={sectionTitleClass}>Cuentas</h3>
+
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="purchase-account" className={fieldLabelClass}>
+                    Cuenta compra
+                  </Label>
+                  <Input
+                    id="purchase-account"
+                    value={form.purchaseAccount}
+                    onChange={(event) =>
+                      onFormFieldChange("purchaseAccount", event.target.value)
+                    }
+                    placeholder="Ej. 1100-001"
+                    className={controlClass}
+                    disabled={isSaving}
+                  />
+                </div>
+
+                <div className="space-y-0.5">
+                  <Label htmlFor="depreciation-account" className={fieldLabelClass}>
+                    Cuenta depreciacion
+                  </Label>
+                  <Input
+                    id="depreciation-account"
+                    value={form.depreciationAccount}
+                    onChange={(event) =>
+                      onFormFieldChange("depreciationAccount", event.target.value)
+                    }
+                    placeholder="Ej. 1200-001"
+                    className={controlClass}
+                    disabled={isSaving}
+                  />
+                </div>
+              </div>
+            </section>
           </form>
         </div>
 
-        {/* Footer */}
-        <SheetFooter className="border-t bg-background/80 px-5 py-4 backdrop-blur-md z-10">
-          <div className="flex w-full items-center gap-3 sm:justify-end">
+        <DialogFooter className="border-t border-gray-100 bg-white px-4 py-2.5">
+          <div className="flex w-full items-center justify-center gap-2.5">
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
               disabled={isSaving}
-              className="h-10 flex-1 sm:flex-none px-4 font-medium"
+              className="h-9 min-w-32 rounded-xl border-gray-200 bg-white px-4 text-xs font-medium text-gray-600 shadow-none hover:bg-gray-50 hover:text-gray-700"
             >
               Cancelar
             </Button>
@@ -272,14 +267,14 @@ export function DepreciationFormSheet({
               type="submit"
               form="depreciation-form"
               disabled={isSaving}
-              className="h-10 flex-1 sm:flex-none px-6 shadow-md transition-all active:scale-[0.98] font-medium"
+              className="h-9 min-w-32 rounded-xl bg-emerald-600 px-5 text-xs font-medium text-white shadow-none transition-colors hover:bg-emerald-700"
             >
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEditMode ? "Guardar" : "Crear"}
             </Button>
           </div>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

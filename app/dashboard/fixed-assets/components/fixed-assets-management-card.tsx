@@ -25,14 +25,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -51,7 +49,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   Tooltip,
   TooltipContent,
@@ -135,6 +133,12 @@ function getPageNumbers(currentPage: number, totalPages: number) {
   });
 }
 
+const STATUS_OPTIONS: { value: FixedAssetStatusFilter; label: string }[] = [
+  { value: "all", label: "Todos" },
+  { value: "active", label: "Activos" },
+  { value: "inactive", label: "Inactivos" },
+];
+
 export function FixedAssetsManagementCard({
   statusFilter,
   onStatusFilterChange,
@@ -181,10 +185,10 @@ export function FixedAssetsManagementCard({
     <motion.div variants={fadeInUp} initial="initial" animate="animate">
       <Card className="overflow-hidden border-border/50 bg-card shadow-lg backdrop-blur-sm">
         {/* Título de la Sección */}
-        <div className="border-b border-border/30 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="border-b border-border/30 bg-linear-to-r from-primary/5 to-primary/10 px-3 py-2 sm:px-4 sm:py-2.5">
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            <h3 className="text-sm font-semibold text-foreground sm:text-base">
+            <h3 className="text-sm font-semibold text-foreground">
               Listado de Activos Fijos
             </h3>
             <Badge variant="secondary" className="ml-auto text-xs font-medium">
@@ -194,35 +198,45 @@ export function FixedAssetsManagementCard({
         </div>
 
         {/* Panel de Filtros */}
-        <CardHeader className="border-b border-border/40 bg-gradient-to-r from-muted/30 to-muted/10 px-4 pt-2 pb-1 sm:px-6 sm:pt-3 sm:pb-2">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <Tabs
-              value={statusFilter}
-              onValueChange={(value) =>
-                onStatusFilterChange(value as FixedAssetStatusFilter)
-              }
-              className="w-full lg:w-auto shrink-0"
-            >
-              <TabsList className="grid h-9 w-full grid-cols-3 bg-background/60 p-1 lg:w-auto border shadow-sm">
-                <TabsTrigger className="text-xs" value="all">
-                  Todos
-                </TabsTrigger>
-                <TabsTrigger className="text-xs" value="active">
-                  Activos
-                </TabsTrigger>
-                <TabsTrigger className="text-xs" value="inactive">
-                  Inactivos
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+        <div className="border-b border-border/40 bg-linear-to-r from-muted/30 to-muted/10 px-3 py-2 sm:px-4">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            {/* Segmented control */}
+            <div className="relative flex h-8 w-full rounded-lg bg-muted/60 p-0.5 shadow-inner ring-1 ring-border/50 lg:w-auto shrink-0">
+              {STATUS_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => onStatusFilterChange(opt.value)}
+                  className={cn(
+                    "relative z-10 flex-1 rounded-md px-3.5 text-[11px] font-semibold transition-all duration-200 lg:flex-initial",
+                    statusFilter === opt.value
+                      ? "text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {statusFilter === opt.value && (
+                    <motion.div
+                      layoutId="fixed-asset-status-pill"
+                      className="absolute inset-0 rounded-md bg-primary shadow-sm"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-10">{opt.label}</span>
+                </button>
+              ))}
+            </div>
 
             <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto lg:justify-end">
               <Select
                 value={departmentFilter}
                 onValueChange={onDepartmentFilterChange}
               >
-                <SelectTrigger className="h-9 w-full bg-background shadow-sm sm:w-[180px]">
-                  <Building2 className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
+                <SelectTrigger className="h-8 w-full text-xs bg-background shadow-sm sm:w-36">
+                  <Building2 className="mr-1.5 h-3.5 w-3.5 text-muted-foreground shrink-0" />
                   <SelectValue placeholder="Departamento" />
                 </SelectTrigger>
                 <SelectContent>
@@ -239,8 +253,8 @@ export function FixedAssetsManagementCard({
                 value={assetTypeFilter}
                 onValueChange={onAssetTypeFilterChange}
               >
-                <SelectTrigger className="h-9 w-full bg-background shadow-sm sm:w-[180px]">
-                  <Building2 className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
+                <SelectTrigger className="h-8 w-full text-xs bg-background shadow-sm sm:w-36">
+                  <Building2 className="mr-1.5 h-3.5 w-3.5 text-muted-foreground shrink-0" />
                   <SelectValue placeholder="Tipo de Activo" />
                 </SelectTrigger>
                 <SelectContent>
@@ -253,28 +267,28 @@ export function FixedAssetsManagementCard({
                 </SelectContent>
               </Select>
 
-              <div className="relative w-full sm:w-60">
+              <div className="relative w-full sm:w-52">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Buscar activo..."
                   value={searchQuery}
                   onChange={(event) => onSearchQueryChange(event.target.value)}
-                  className="h-9 bg-background pl-8 shadow-sm transition-colors focus-visible:ring-1 focus-visible:ring-primary/30"
+                  className="h-8 bg-background pl-8 text-xs shadow-sm transition-colors focus-visible:ring-1 focus-visible:ring-primary/30"
                 />
               </div>
 
               <Button
                 onClick={onCreate}
                 disabled={!departments.length || !assetTypes.length}
-                className="h-10 w-full px-4 sm:w-auto shadow-sm active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 font-medium"
+                className="h-8 w-full shrink-0 rounded-lg px-3 text-xs sm:w-auto shadow-sm active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 font-medium"
               >
-                <Plus className="mr-1.5 h-4 w-4" />
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
                 Añadir Activo
               </Button>
             </div>
           </div>
-        </CardHeader>
+        </div>
 
         <CardContent className="p-0">
           {/* Panel de Acciones Masivas (Flotante) */}
@@ -368,7 +382,7 @@ export function FixedAssetsManagementCard({
                   <Checkbox
                     checked={allSelectedInPage}
                     onCheckedChange={onToggleSelectAll}
-                    className="h-4 w-4 rounded-[4px]"
+                    className="h-4 w-4 rounded-lg"
                   />
                 </label>
               </div>
@@ -377,12 +391,12 @@ export function FixedAssetsManagementCard({
               <div className="hidden w-full overflow-x-auto md:block">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-b-border/50 bg-gradient-to-r from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30">
+                    <TableRow className="border-b-border/50 bg-linear-to-r from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30">
                       <TableHead className="w-10 pl-5 pr-2">
                         <Checkbox
                           checked={allSelectedInPage}
                           onCheckedChange={onToggleSelectAll}
-                          className="rounded-[4px] border-muted-foreground/40 data-[state=checked]:border-primary"
+                          className="rounded-lg border-muted-foreground/40 data-[state=checked]:border-primary"
                         />
                       </TableHead>
                       {/* Cabeceras de Tabla Ordenables */}
@@ -391,7 +405,7 @@ export function FixedAssetsManagementCard({
                           onClick={() => onSort("name")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Nombre {" "}
+                          Nombre{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
@@ -400,7 +414,7 @@ export function FixedAssetsManagementCard({
                           onClick={() => onSort("registrationDate")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Fecha Reg. {" "}
+                          Fecha Reg.{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
@@ -409,7 +423,7 @@ export function FixedAssetsManagementCard({
                           onClick={() => onSort("purchaseValue")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Valor Compra {" "}
+                          Valor Compra{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
@@ -418,7 +432,7 @@ export function FixedAssetsManagementCard({
                           onClick={() => onSort("departmentId")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Departamento {" "}
+                          Departamento{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
@@ -427,7 +441,7 @@ export function FixedAssetsManagementCard({
                           onClick={() => onSort("assetTypeId")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Tipo {" "}
+                          Tipo{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
@@ -436,7 +450,7 @@ export function FixedAssetsManagementCard({
                           onClick={() => onSort("status")}
                           className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Estado {" "}
+                          Estado{" "}
                           <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
                         </button>
                       </TableHead>
@@ -462,30 +476,28 @@ export function FixedAssetsManagementCard({
                               isChecked && "bg-primary/8 hover:bg-primary/12",
                             )}
                           >
-                            <TableCell className="w-10 pl-5 pr-2 py-3">
+                            <TableCell className="w-10 pl-5 pr-2 py-1.5">
                               <Checkbox
                                 checked={isChecked}
                                 onCheckedChange={() =>
                                   onToggleSelectRow(asset.id)
                                 }
-                                className="rounded-[4px] border-muted-foreground/40 data-[state=checked]:border-primary"
+                                className="rounded-lg border-muted-foreground/40 data-[state=checked]:border-primary"
                               />
                             </TableCell>
-                            <TableCell className="px-2 py-3">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-9 w-9 rounded-lg border border-border/50 bg-linear-to-br from-background to-muted/20 shadow-sm">
-                                  <AvatarFallback className="rounded-lg bg-transparent text-xs font-semibold text-muted-foreground">
+                            <TableCell className="px-2 py-1.5">
+                              <div className="flex items-center gap-2.5">
+                                <Avatar className="h-7 w-7 rounded-md border border-border/50 bg-linear-to-br from-background to-muted/20 shadow-sm shrink-0">
+                                  <AvatarFallback className="rounded-md bg-transparent text-[10px] font-semibold text-muted-foreground">
                                     {getInitials(asset.name)}
                                   </AvatarFallback>
                                 </Avatar>
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-semibold leading-tight text-foreground">
-                                    {asset.name}
-                                  </span>
-                                </div>
+                                <span className="text-xs font-semibold leading-tight text-foreground">
+                                  {asset.name}
+                                </span>
                               </div>
                             </TableCell>
-                            <TableCell className="px-2 py-3">
+                            <TableCell className="px-2 py-1.5">
                               <div className="flex items-center gap-2 text-muted-foreground">
                                 <Calendar className="h-3.5 w-3.5 shrink-0 opacity-60" />
                                 <span className="text-xs font-medium">
@@ -493,32 +505,32 @@ export function FixedAssetsManagementCard({
                                 </span>
                               </div>
                             </TableCell>
-                            <TableCell className="px-2 py-3 font-mono text-xs font-medium text-muted-foreground">
+                            <TableCell className="px-2 py-1.5 font-mono text-xs font-medium text-muted-foreground">
                               {formatCurrency(asset.purchaseValue)}
                             </TableCell>
-                            <TableCell className="px-2 py-3">
+                            <TableCell className="px-2 py-1.5">
                               <Badge
                                 variant="outline"
-                                className="h-6 px-2 text-xs font-medium text-muted-foreground bg-background border-border/60"
+                                className="h-5 px-1.5 text-[10px] font-medium text-muted-foreground bg-background border-border/60"
                               >
                                 {asset.department?.name ??
                                   `Dpto #${asset.departmentId}`}
                               </Badge>
                             </TableCell>
-                            <TableCell className="px-2 py-3">
+                            <TableCell className="px-2 py-1.5">
                               <Badge
                                 variant="outline"
-                                className="h-6 px-2 text-xs font-medium text-muted-foreground bg-background border-border/60"
+                                className="h-5 px-1.5 text-[10px] font-medium text-muted-foreground bg-background border-border/60"
                               >
                                 {asset.assetType?.name ??
                                   `Tipo #${asset.assetTypeId}`}
                               </Badge>
                             </TableCell>
-                            <TableCell className="px-2 py-3">
-                              <div className="flex items-center gap-2">
+                            <TableCell className="px-2 py-1.5">
+                              <div className="flex items-center gap-1.5">
                                 <div
                                   className={cn(
-                                    "h-2 w-2 rounded-full shadow-sm",
+                                    "h-1.5 w-1.5 rounded-full shadow-sm",
                                     asset.status
                                       ? "bg-emerald-500 ring-2 ring-emerald-500/20"
                                       : "bg-amber-500 ring-2 ring-amber-500/20",
@@ -529,20 +541,20 @@ export function FixedAssetsManagementCard({
                                 </span>
                               </div>
                             </TableCell>
-                            <TableCell className="px-5 py-3 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
+                            <TableCell className="px-2 py-1.5 text-right">
+                              <div className="flex items-center justify-end gap-1">
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="icon"
                                       onClick={() => onView(asset)}
-                                      className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+                                      className="h-7 w-7 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                                     >
-                                      <Eye className="h-4 w-4" />
+                                      <Eye className="h-3.5 w-3.5" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent className="text-xs">
+                                  <TooltipContent className="text-[10px]">
                                     Ver detalle
                                   </TooltipContent>
                                 </Tooltip>
@@ -554,13 +566,30 @@ export function FixedAssetsManagementCard({
                                       size="icon"
                                       onClick={() => onEdit(asset)}
                                       disabled={isSaving}
-                                      className="h-8 w-8 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-all"
+                                      className="h-7 w-7 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-colors"
                                     >
-                                      <Pencil className="h-4 w-4" />
+                                      <Pencil className="h-3.5 w-3.5" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent className="text-xs">
+                                  <TooltipContent className="text-[10px]">
                                     Editar
+                                  </TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => onDelete(asset)}
+                                      disabled={isSaving}
+                                      className="h-7 w-7 text-muted-foreground hover:bg-rose-100 hover:text-rose-700 dark:hover:bg-rose-950/50 dark:hover:text-rose-400 transition-colors"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="text-[10px]">
+                                    Eliminar
                                   </TooltipContent>
                                 </Tooltip>
 
@@ -569,9 +598,9 @@ export function FixedAssetsManagementCard({
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+                                      className="h-7 w-7 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                                     >
-                                      <MoreHorizontal className="h-4 w-4" />
+                                      <MoreHorizontal className="h-3.5 w-3.5" />
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent
@@ -589,15 +618,6 @@ export function FixedAssetsManagementCard({
                                     <DropdownMenuItem className="text-xs">
                                       <Download className="mr-2 h-4 w-4 opacity-70" />{" "}
                                       Exportar datos
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                      className="text-xs text-rose-600 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/50"
-                                      onClick={() => onDelete(asset)}
-                                      disabled={isSaving}
-                                    >
-                                      <Trash2 className="mr-2 h-4 w-4 opacity-70" />{" "}
-                                      Eliminar
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
@@ -625,77 +645,71 @@ export function FixedAssetsManagementCard({
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2, delay: index * 0.02 }}
                         className={cn(
-                          "bg-card p-4 transition-all hover:bg-muted/30",
+                          "bg-card px-3 py-2.5 transition-all hover:bg-muted/30",
                           isChecked &&
                             "bg-primary/8 border-l-2 border-l-primary",
                         )}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-center gap-2.5">
                           <Checkbox
                             checked={isChecked}
-                            onCheckedChange={() =>
-                              onToggleSelectRow(asset.id)
-                            }
-                            className="mt-1 rounded-[4px]"
+                            onCheckedChange={() => onToggleSelectRow(asset.id)}
+                            className="h-4 w-4 rounded-lg shrink-0"
                           />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center justify-between gap-2">
                               <div className="truncate">
-                                <p className="text-sm font-semibold text-foreground truncate">
+                                <p className="text-xs font-semibold text-foreground truncate">
                                   {asset.name}
                                 </p>
-                                <p className="text-xs text-muted-foreground mt-0.5">
-                                  {asset.assetType?.name ?? `Tipo #${asset.assetTypeId}`} • {formatCurrency(asset.purchaseValue)}
+                                <p className="text-[10px] text-muted-foreground mt-0.5">
+                                  {asset.assetType?.name ??
+                                    `Tipo #${asset.assetTypeId}`}{" "}
+                                  • {formatCurrency(asset.purchaseValue)}
                                 </p>
                               </div>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 shrink-0 -mr-2 text-muted-foreground hover:bg-muted"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                  align="end"
-                                  className="w-44"
+                              <div className="flex items-center -mr-1.5 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onView(asset)}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-muted"
                                 >
-                                  <DropdownMenuItem
-                                    onClick={() => onView(asset)}
-                                    className="text-xs"
-                                  >
-                                    <Eye className="mr-2 h-4 w-4" /> Ver detalle
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => onEdit(asset)}
-                                    className="text-xs"
-                                  >
-                                    <Pencil className="mr-2 h-4 w-4" /> Editar
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="text-xs text-rose-600 focus:text-rose-600"
-                                    onClick={() => onDelete(asset)}
-                                  >
-                                    <Trash2 className="mr-2 h-4 w-4" /> Eliminar
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                                  <Eye className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onEdit(asset)}
+                                  disabled={isSaving}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onDelete(asset)}
+                                  disabled={isSaving}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-rose-100 hover:text-rose-700"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
                             </div>
 
-                            <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <div className="mt-1 flex flex-wrap items-center gap-1.5">
                               <Badge
                                 variant="outline"
-                                className="h-6 px-2 text-xs font-medium text-muted-foreground bg-background border-border/60"
+                                className="h-5 px-1.5 text-[10px] font-medium text-muted-foreground bg-background border-border/60"
                               >
                                 {asset.department?.name ??
                                   `Dpto #${asset.departmentId}`}
                               </Badge>
-                              <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                              <div className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
                                 <div
                                   className={cn(
-                                    "h-2 w-2 rounded-full",
+                                    "h-1.5 w-1.5 rounded-full",
                                     asset.status
                                       ? "bg-emerald-500 ring-2 ring-emerald-500/20"
                                       : "bg-amber-500 ring-2 ring-amber-500/20",
@@ -718,11 +732,11 @@ export function FixedAssetsManagementCard({
           {!isLoading && totalAssets > 0 && (
             <div className="flex flex-col gap-3 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
               <p className="text-[11px] font-medium text-muted-foreground text-center sm:text-left">
-                Mostrando {" "}
+                Mostrando{" "}
                 <span className="text-foreground">
                   {(currentPage - 1) * itemsPerPage + 1}
                 </span>{" "}
-                - {" "}
+                -{" "}
                 <span className="text-foreground">
                   {Math.min(currentPage * itemsPerPage, totalAssets)}
                 </span>{" "}

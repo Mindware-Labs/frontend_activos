@@ -14,8 +14,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { FixedAssetFormSheet } from "./components/fixed-asset-form-sheet";
 import { FixedAssetsManagementCard } from "./components/fixed-assets-management-card";
 import { FixedAssetDetailDialog } from "./components/fixed-asset-detail-dialog";
-import { FixedAssetsHeader } from "./components/fixed-assets-header";
-import { FixedAssetsStats } from "./components/fixed-assets-stats";
 import { FixedAssetsAlert } from "./components/fixed-assets-alert";
 import type {
   Department,
@@ -25,8 +23,6 @@ import type {
   FixedAssetStatusFilter,
   SortDirection,
   SortableFixedAssetKey,
-  FixedAssetStats,
-  SetFixedAssetFormField,
 } from "./components/types";
 
 const API_BASE_URL = (
@@ -119,7 +115,8 @@ export default function FixedAssetsPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [statusFilter, setStatusFilter] = useState<FixedAssetStatusFilter>("all");
+  const [statusFilter, setStatusFilter] =
+    useState<FixedAssetStatusFilter>("all");
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
   const [assetTypeFilter, setAssetTypeFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -128,15 +125,6 @@ export default function FixedAssetsPage() {
     key: SortableFixedAssetKey;
     direction: SortDirection;
   } | null>(null);
-
-  const [stats, setStats] = useState<FixedAssetStats>({
-    total: 0,
-    active: 0,
-    inactive: 0,
-    totalPurchaseValue: 0,
-    totalResidualValue: 0,
-    totalAccumulatedDepreciation: 0,
-  });
 
   const loadData = useCallback(async (showRefreshing = false) => {
     if (showRefreshing) {
@@ -155,25 +143,6 @@ export default function FixedAssetsPage() {
       setAssets(assetsRes.data);
       setDepartments(deptsRes.data);
       setAssetTypes(typesRes.data);
-
-      const total = assetsRes.total;
-      const active = assetsRes.data.filter((a) => a.status).length;
-      const inactive = total - active;
-      const totalPurchaseValue = assetsRes.data.reduce((sum, a) => sum + a.purchaseValue, 0);
-      const totalResidualValue = assetsRes.data.reduce((sum, a) => sum + a.residualValue, 0);
-      const totalAccumulatedDepreciation = assetsRes.data.reduce(
-        (sum, a) => sum + a.accumulatedDepreciation,
-        0,
-      );
-
-      setStats({
-        total,
-        active,
-        inactive,
-        totalPurchaseValue,
-        totalResidualValue,
-        totalAccumulatedDepreciation,
-      });
     } catch (error) {
       sileo.error({
         title: "Error",
@@ -213,15 +182,16 @@ export default function FixedAssetsPage() {
 
   const filteredAndSortedAssets = useMemo(() => {
     const filtered = assets.filter((asset) => {
-      const matchesSearch =
-        asset.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = asset.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
 
       const matchesStatus =
         statusFilter === "all"
           ? true
           : statusFilter === "active"
-          ? asset.status
-          : !asset.status;
+            ? asset.status
+            : !asset.status;
 
       const matchesDept =
         departmentFilter === "all"
@@ -259,16 +229,21 @@ export default function FixedAssetsPage() {
     }
 
     return filtered;
-  }, [assets, searchQuery, statusFilter, departmentFilter, assetTypeFilter, sortConfig]);
+  }, [
+    assets,
+    searchQuery,
+    statusFilter,
+    departmentFilter,
+    assetTypeFilter,
+    sortConfig,
+  ]);
 
   const paginatedAssets = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return filteredAndSortedAssets.slice(start, start + itemsPerPage);
   }, [filteredAndSortedAssets, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(
-    filteredAndSortedAssets.length / itemsPerPage,
-  );
+  const totalPages = Math.ceil(filteredAndSortedAssets.length / itemsPerPage);
 
   function setFormField<K extends keyof FixedAssetFormState>(
     field: K,
@@ -295,7 +270,9 @@ export default function FixedAssetsPage() {
       registrationDate: normalizeDateForInput(asset.registrationDate),
       purchaseValue: String(asset.purchaseValue),
       residualValue: String(asset.residualValue),
-      usefulLifeMonths: asset.usefulLifeMonths ? String(asset.usefulLifeMonths) : "",
+      usefulLifeMonths: asset.usefulLifeMonths
+        ? String(asset.usefulLifeMonths)
+        : "",
       status: asset.status,
       departmentId: String(asset.departmentId),
       assetTypeId: String(asset.assetTypeId),
@@ -347,7 +324,9 @@ export default function FixedAssetsPage() {
         registrationDate: form.registrationDate,
         purchaseValue: Number(form.purchaseValue),
         residualValue: Number(form.residualValue),
-        usefulLifeMonths: form.usefulLifeMonths ? Number(form.usefulLifeMonths) : null,
+        usefulLifeMonths: form.usefulLifeMonths
+          ? Number(form.usefulLifeMonths)
+          : null,
         departmentId: deptId,
         assetTypeId: typeId,
       };
@@ -502,16 +481,12 @@ export default function FixedAssetsPage() {
 
   return (
     <TooltipProvider>
-      <motion.div className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 px-3 py-4 sm:px-4 sm:py-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-        <FixedAssetsHeader
-          isRefreshing={isLoading}
-          canCreate={Boolean(departments.length && assetTypes.length)}
-          onRefresh={() => void loadData(true)}
-          onCreate={openCreateSheet}
-        />
-
-        <FixedAssetsStats stats={stats} />
-
+      <motion.div
+        className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 p-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <FixedAssetsAlert show={assets.length === 0 && !isLoading} />
 
         <FixedAssetsManagementCard

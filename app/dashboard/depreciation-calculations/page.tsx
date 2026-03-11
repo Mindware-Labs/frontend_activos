@@ -14,8 +14,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DepreciationFormSheet } from "./components/depreciation-form-sheet";
 import { DepreciationsManagementCard } from "./components/depreciations-management-card";
 import { DepreciationDetailDialog } from "./components/depreciation-detail-dialog";
-import { DepreciationsHeader } from "./components/depreciations-header";
-import { DepreciationsStats } from "./components/depreciations-stats";
 import type {
   FixedAsset,
   DepreciationCalculation,
@@ -125,13 +123,18 @@ export default function DepreciationsPage() {
     setIsLoading(true);
     try {
       const [depreciationsResponse, assetsResponse] = await Promise.all([
-        apiRequest<DepreciationCalculation[] | PaginatedResponse<DepreciationCalculation>>("/depreciation-calculations"),
-        apiRequest<FixedAsset[] | PaginatedResponse<FixedAsset>>("/fixed-assets"),
+        apiRequest<
+          DepreciationCalculation[] | PaginatedResponse<DepreciationCalculation>
+        >("/depreciation-calculations"),
+        apiRequest<FixedAsset[] | PaginatedResponse<FixedAsset>>(
+          "/fixed-assets",
+        ),
       ]);
 
       const depreciationsData = Array.isArray(depreciationsResponse)
         ? depreciationsResponse
-        : (depreciationsResponse as PaginatedResponse<DepreciationCalculation>)?.data || [];
+        : (depreciationsResponse as PaginatedResponse<DepreciationCalculation>)
+            ?.data || [];
 
       const assetsData = Array.isArray(assetsResponse)
         ? assetsResponse
@@ -173,7 +176,7 @@ export default function DepreciationsPage() {
     if (sortConfig) {
       const sortKey = sortConfig.key;
       const sortDirection = sortConfig.direction;
-      
+
       filtered.sort((a, b) => {
         const aVal = a[sortKey];
         const bVal = b[sortKey];
@@ -394,32 +397,11 @@ export default function DepreciationsPage() {
   return (
     <TooltipProvider>
       <motion.div
-        className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 px-3 py-4 sm:px-4 sm:py-5"
+        className="container relative mx-auto max-w-350 bg-linear-to-br from-emerald-50/60 via-white to-green-50/60 p-0"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <DepreciationsHeader
-          canCreate={Boolean(fixedAssets.length)}
-          onCreate={openCreateSheet}
-        />
-
-        <div className="mb-6 sm:mb-8">
-          <DepreciationsStats
-            stats={{
-              total: depreciations.length,
-              totalAmount: depreciations.reduce(
-                (sum, dep) => sum + (dep.amountDepreciation || 0),
-                0,
-              ),
-              totalAccumulated: depreciations.reduce(
-                (sum, dep) => sum + (dep.accumulatedDepreciation || 0),
-                0,
-              ),
-            }}
-          />
-        </div>
-
         <DepreciationsManagementCard
           searchQuery={searchQuery}
           onSearchQueryChange={(value) => {

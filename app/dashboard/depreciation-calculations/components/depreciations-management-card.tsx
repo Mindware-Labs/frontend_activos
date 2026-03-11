@@ -8,7 +8,6 @@ import {
   DollarSign,
   Eye,
   Loader2,
-  MoreHorizontal,
   Pencil,
   Plus,
   Search,
@@ -20,16 +19,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -154,29 +145,29 @@ export function DepreciationsManagementCard({
         </div>
 
         {/* Panel de Filtros */}
-        <CardHeader className="border-b border-border/40 bg-linear-to-r from-muted/30 to-muted/10 px-4 pt-2 pb-1 sm:px-6 sm:pt-3 sm:pb-2">
-          <div className="flex flex-col gap-3">
-            <div className="relative w-full">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+        <div className="border-b border-border/40 bg-linear-to-r from-muted/30 to-muted/10 px-3 py-2 sm:px-4">
+          <div className="flex gap-2 items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground/70" />
               <Input
                 type="search"
                 placeholder="Buscar por activo o cuenta..."
                 value={searchQuery}
                 onChange={(event) => onSearchQueryChange(event.target.value)}
-                className="h-9 bg-background pl-8 shadow-sm transition-colors focus-visible:ring-1 focus-visible:ring-primary/30"
+                className="h-8 bg-background pl-7 text-xs shadow-sm transition-colors focus-visible:ring-1 focus-visible:ring-primary/30"
               />
             </div>
 
             <Button
               onClick={onCreate}
               size="sm"
-              className="h-10 w-full px-4 sm:w-auto shadow-sm active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 font-medium"
+              className="h-8 shrink-0 rounded-lg shadow-sm active:scale-[0.98] transition-transform font-semibold"
             >
-              <Plus className="mr-1.5 h-4 w-4" />
+              <Plus className="mr-1.5 h-3.5 w-3.5" />
               Añadir Cálculo
             </Button>
           </div>
-        </CardHeader>
+        </div>
 
         <CardContent className="p-0">
           {/* Panel de Acciones Masivas */}
@@ -333,7 +324,7 @@ export function DepreciationsManagementCard({
                               isChecked && "bg-primary/8 hover:bg-primary/12",
                             )}
                           >
-                            <TableCell className="w-10 pl-5 pr-2 py-3">
+                            <TableCell className="w-10 pl-5 pr-2 py-1.5">
                               <Checkbox
                                 checked={isChecked}
                                 onCheckedChange={() =>
@@ -342,18 +333,21 @@ export function DepreciationsManagementCard({
                                 className="rounded-lg border-muted-foreground/40 data-[state=checked]:border-primary"
                               />
                             </TableCell>
-                            <TableCell className="px-2 py-3 font-semibold text-sm">
+                            <TableCell className="px-2 py-1.5 font-semibold text-sm">
                               {depreciation.processYear}
                             </TableCell>
-                            <TableCell className="px-2 py-3">
+                            <TableCell className="px-2 py-1.5">
                               <Badge
                                 variant="outline"
                                 className="h-6 px-2 text-xs font-medium text-muted-foreground bg-background border-border/60"
                               >
-                                {String(depreciation.processMonth).padStart(2, "0")}
+                                {String(depreciation.processMonth).padStart(
+                                  2,
+                                  "0",
+                                )}
                               </Badge>
                             </TableCell>
-                            <TableCell className="px-2 py-3">
+                            <TableCell className="px-2 py-1.5">
                               <div className="flex items-center gap-2 text-muted-foreground">
                                 <Calendar className="h-3.5 w-3.5 shrink-0 opacity-60" />
                                 <span className="text-xs font-medium">
@@ -361,34 +355,34 @@ export function DepreciationsManagementCard({
                                 </span>
                               </div>
                             </TableCell>
-                            <TableCell className="px-2 py-3 max-w-30">
+                            <TableCell className="px-2 py-1.5 max-w-30">
                               <span className="inline-block text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-400 truncate">
                                 {formatCurrency(
                                   depreciation.amountDepreciation,
                                 )}
                               </span>
                             </TableCell>
-                            <TableCell className="px-2 py-3 max-w-30">
+                            <TableCell className="px-2 py-1.5 max-w-30">
                               <span className="inline-block text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-400 truncate">
                                 {formatCurrency(
                                   depreciation.accumulatedDepreciation,
                                 )}
                               </span>
                             </TableCell>
-                            <TableCell className="px-5 py-3 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
+                            <TableCell className="px-5 py-1.5 text-right">
+                              <div className="flex items-center justify-end gap-1">
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="icon"
                                       onClick={() => onView(depreciation)}
-                                      className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+                                      className="h-7 w-7 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
                                     >
-                                      <Eye className="h-4 w-4" />
+                                      <Eye className="h-3.5 w-3.5" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent className="text-xs">
+                                  <TooltipContent className="text-[10px]">
                                     Ver detalle
                                   </TooltipContent>
                                 </Tooltip>
@@ -400,40 +394,32 @@ export function DepreciationsManagementCard({
                                       size="icon"
                                       onClick={() => onEdit(depreciation)}
                                       disabled={isSaving}
-                                      className="h-8 w-8 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-all"
+                                      className="h-7 w-7 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-all"
                                     >
-                                      <Pencil className="h-4 w-4" />
+                                      <Pencil className="h-3.5 w-3.5" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent className="text-xs">
+                                  <TooltipContent className="text-[10px]">
                                     Editar
                                   </TooltipContent>
                                 </Tooltip>
 
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
-                                    >
-                                      <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent
-                                    align="end"
-                                    className="w-40"
-                                  >
-                                    <DropdownMenuItem
-                                      className="text-xs text-rose-600 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/50"
                                       onClick={() => onDelete(depreciation)}
                                       disabled={isSaving}
+                                      className="h-7 w-7 text-muted-foreground hover:bg-rose-100 hover:text-rose-700 dark:hover:bg-rose-950/50 dark:hover:text-rose-400 transition-colors"
                                     >
-                                      <Trash2 className="mr-2 h-4 w-4 opacity-70" />{" "}
-                                      Eliminar
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="text-[10px]">
+                                    Eliminar
+                                  </TooltipContent>
+                                </Tooltip>
                               </div>
                             </TableCell>
                           </motion.tr>
@@ -458,72 +444,65 @@ export function DepreciationsManagementCard({
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2, delay: index * 0.02 }}
                         className={cn(
-                          "bg-card p-4 transition-all hover:bg-muted/30",
+                          "bg-card px-3 py-2.5 transition-all hover:bg-muted/30",
                           isChecked &&
                             "bg-primary/8 border-l-2 border-l-primary",
                         )}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-center gap-2.5">
                           <Checkbox
                             checked={isChecked}
                             onCheckedChange={() =>
                               onToggleSelectRow(depreciation.id)
                             }
-                            className="mt-1 rounded-lg"
+                            className="h-4 w-4 rounded-[3px] shrink-0"
                           />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center justify-between gap-2">
                               <div className="truncate">
-                                <p className="text-sm font-semibold text-foreground">
+                                <p className="text-xs font-semibold text-foreground">
                                   {depreciation.processYear} / Mes{" "}
                                   {String(depreciation.processMonth).padStart(
                                     2,
                                     "0",
                                   )}
                                 </p>
-                                <p className="text-xs text-muted-foreground mt-0.5">
+                                <p className="text-[10px] text-muted-foreground mt-0.5">
                                   {formatDate(depreciation.processDate)}
                                 </p>
                               </div>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 shrink-0 -mr-2 text-muted-foreground hover:bg-muted"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                  align="end"
-                                  className="w-40"
+                              <div className="flex items-center -mr-1.5 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onView(depreciation)}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-muted"
                                 >
-                                  <DropdownMenuItem
-                                    onClick={() => onView(depreciation)}
-                                    className="text-xs"
-                                  >
-                                    <Eye className="mr-2 h-4 w-4" /> Ver
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => onEdit(depreciation)}
-                                    className="text-xs"
-                                  >
-                                    <Pencil className="mr-2 h-4 w-4" /> Editar
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="text-xs text-rose-600 focus:text-rose-600"
-                                    onClick={() => onDelete(depreciation)}
-                                  >
-                                    <Trash2 className="mr-2 h-4 w-4" /> Eliminar
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                                  <Eye className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onEdit(depreciation)}
+                                  disabled={isSaving}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-emerald-100 hover:text-emerald-700"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onDelete(depreciation)}
+                                  disabled={isSaving}
+                                  className="h-8 w-8 text-muted-foreground hover:bg-rose-100 hover:text-rose-700"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
                             </div>
 
-                            <div className="mt-3 flex flex-col gap-2">
-                              <p className="text-muted-foreground text-xs">Montos:</p>
-                              <div className="flex flex-col sm:flex-row gap-2 text-xs font-semibold">
+                            <div className="mt-1.5 flex flex-col gap-1">
+                              <div className="flex gap-2 text-[10px] font-semibold">
                                 <span className="text-blue-700 dark:text-blue-400 truncate">
                                   {formatCurrency(
                                     depreciation.amountDepreciation,
@@ -531,7 +510,8 @@ export function DepreciationsManagementCard({
                                 </span>
                                 <span className="text-muted-foreground">|</span>
                                 <span className="text-amber-700 dark:text-amber-400 truncate">
-                                  Acum: {formatCurrency(
+                                  Acum:{" "}
+                                  {formatCurrency(
                                     depreciation.accumulatedDepreciation,
                                   )}
                                 </span>

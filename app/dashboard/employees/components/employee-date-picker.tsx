@@ -16,6 +16,7 @@ type EmployeeDatePickerProps = {
   value: string;
   disabled?: boolean;
   onChange: (value: string) => void;
+  className?: string;
 };
 
 const WEEK_DAYS = ["L", "M", "X", "J", "V", "S", "D"];
@@ -45,9 +46,9 @@ function buildMonthGrid(month: Date) {
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
 
   const leadingCells = (firstDayOfMonth.getDay() + 6) % 7;
-const cells: Array<Date | null> = Array.from<Date | null>({ length: leadingCells }).fill(
-    null,
-  );
+  const cells: Array<Date | null> = Array.from<Date | null>({
+    length: leadingCells,
+  }).fill(null);
 
   for (let day = 1; day <= daysInMonth; day += 1) {
     cells.push(new Date(year, monthIndex, day));
@@ -89,6 +90,7 @@ export function EmployeeDatePicker({
   value,
   disabled,
   onChange,
+  className,
 }: EmployeeDatePickerProps) {
   const selectedDate = useMemo(() => fromInputDate(value), [value]);
   const [open, setOpen] = useState(false);
@@ -120,22 +122,26 @@ export function EmployeeDatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "h-9 w-full justify-start bg-background px-3 text-left text-sm font-normal shadow-xs",
-            !selectedDate && "text-muted-foreground",
+            "h-9 w-full justify-start rounded-xl border-gray-200 bg-white px-3 text-left text-sm font-normal text-gray-900 shadow-none transition-all focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/20",
+            !selectedDate && "text-gray-400",
+            className,
           )}
         >
-          <CalendarDays className="h-3.5 w-3.5" />
+          <CalendarDays className="h-4 w-4 text-gray-400" />
           {selectedDate ? formatLabel(selectedDate) : "Selecciona una fecha"}
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="start" className="w-[280px] p-3">
+      <PopoverContent
+        align="start"
+        className="w-[260px] rounded-xl border border-gray-200 bg-white p-2.5 shadow-lg"
+      >
         <div className="mb-2 flex items-center justify-between">
           <Button
             type="button"
             variant="ghost"
             size="icon-xs"
-            className="h-7 w-7"
+            className="h-6 w-6 rounded-lg text-gray-500 hover:bg-gray-100"
             onClick={() =>
               setVisibleMonth(
                 (current) =>
@@ -146,7 +152,7 @@ export function EmployeeDatePicker({
             <ChevronLeft className="h-3.5 w-3.5" />
           </Button>
 
-          <p className="text-xs font-semibold capitalize text-foreground">
+          <p className="text-[11px] font-medium capitalize text-gray-700">
             {formatMonthLabel(visibleMonth)}
           </p>
 
@@ -154,7 +160,7 @@ export function EmployeeDatePicker({
             type="button"
             variant="ghost"
             size="icon-xs"
-            className="h-7 w-7"
+            className="h-6 w-6 rounded-lg text-gray-500 hover:bg-gray-100"
             onClick={() =>
               setVisibleMonth(
                 (current) =>
@@ -170,7 +176,7 @@ export function EmployeeDatePicker({
           {WEEK_DAYS.map((day) => (
             <span
               key={day}
-              className="flex h-7 items-center justify-center text-[10px] font-semibold text-muted-foreground"
+              className="flex h-6 items-center justify-center text-[10px] font-medium text-gray-400"
             >
               {day}
             </span>
@@ -192,9 +198,9 @@ export function EmployeeDatePicker({
                 variant="ghost"
                 size="icon-xs"
                 className={cn(
-                  "h-8 w-8 rounded-md text-xs font-medium",
+                  "h-7 w-7 rounded-lg text-[11px] font-medium text-gray-700 hover:bg-gray-100",
                   isSelected &&
-                    "bg-primary text-primary-foreground hover:bg-primary/90",
+                    "bg-emerald-600 text-white hover:bg-emerald-700",
                 )}
                 onClick={() => handleDaySelect(day)}
               >

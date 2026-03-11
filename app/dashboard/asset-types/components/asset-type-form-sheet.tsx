@@ -3,20 +3,18 @@
 import type { FormEvent } from "react";
 import { Loader2 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import type {
   AssetType,
   AssetTypeFormState,
@@ -45,111 +43,110 @@ export function AssetTypeFormSheet({
   onCancel,
 }: AssetTypeFormSheetProps) {
   const isEditMode = Boolean(editingType);
+  const sectionTitleClass =
+    "text-xs font-medium uppercase tracking-[0.14em] text-gray-500";
+  const fieldLabelClass = "text-xs font-medium text-gray-500";
+  const controlClass =
+    "h-9 w-full min-w-0 rounded-xl border-gray-200 bg-white px-3 text-sm text-gray-900 shadow-none transition-all focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/20";
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-[440px] border-l-0 sm:border-l shadow-2xl">
-        <SheetHeader className="relative overflow-hidden border-b bg-gradient-to-br from-emerald-500/10 via-background to-background px-5 py-5 text-left z-10">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-10 -mt-10" />
-          
-          <SheetTitle className="text-xl font-bold tracking-tight">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-1rem)] max-w-lg flex-col gap-0 overflow-hidden rounded-2xl border border-gray-200 bg-white p-0 sm:w-full">
+        <DialogHeader className="space-y-0.5 border-b border-gray-100 bg-white px-4 py-3 text-left">
+          <DialogTitle className="text-sm font-semibold tracking-tight text-gray-900 sm:text-base">
             {isEditMode ? "Editar Tipo de Activo" : "Registrar Tipo de Activo"}
-          </SheetTitle>
-          <SheetDescription className="text-xs mt-1">
+          </DialogTitle>
+          <DialogDescription className="text-xs leading-snug text-gray-500">
             {isEditMode
               ? "Actualiza los datos del tipo de activo."
-              : "Completa los campos para añadir un nuevo tipo."}
-          </SheetDescription>
-        </SheetHeader>
+              : "Completa los campos para registrar un nuevo tipo de activo."}
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto bg-muted/10">
-          <form
-            id="asset-type-form"
-            onSubmit={onSubmit}
-            className="flex flex-col gap-4 p-5"
-          >
-            <section className="space-y-3 rounded-xl border bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
-                Información General
-              </h3>
+        <div className="flex-1 overflow-y-auto bg-white">
+          <form id="asset-type-form" onSubmit={onSubmit} className="space-y-3 p-4">
+            <section className="space-y-2.5">
+              <h3 className={sectionTitleClass}>Informacion General</h3>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="type-name" className="text-xs font-semibold">
+              <div className="space-y-0.5">
+                <Label htmlFor="type-name" className={fieldLabelClass}>
                   Nombre
                 </Label>
                 <Input
                   id="type-name"
                   value={form.name}
-                  onChange={(e) => onFormFieldChange("name", e.target.value)}
-                  placeholder="Electrónicos..."
-                  className="h-9 text-sm"
+                  onChange={(event) => onFormFieldChange("name", event.target.value)}
+                  placeholder="Ej. Equipos de computo"
+                  className={controlClass}
                   required
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="type-desc" className="text-xs font-semibold">
-                  Descripción
+              <div className="space-y-0.5">
+                <Label htmlFor="type-desc" className={fieldLabelClass}>
+                  Descripcion
                 </Label>
                 <Input
                   id="type-desc"
                   value={form.description}
-                  onChange={(e) => onFormFieldChange("description", e.target.value)}
-                  placeholder="10 caracteres"
-                  className="h-9 text-sm"
+                  onChange={(event) =>
+                    onFormFieldChange("description", event.target.value)
+                  }
+                  placeholder="Descripcion corta"
+                  className={controlClass}
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="type-purchase" className="text-xs font-semibold">
-                  Cuenta compra
-                </Label>
-                <Input
-                  id="type-purchase"
-                  value={form.purchaseAccount}
-                  onChange={(e) =>
-                    onFormFieldChange("purchaseAccount", e.target.value)
-                  }
-                  placeholder="1000..."
-                  className="h-9 text-sm"
-                  required
-                />
-              </div>
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="type-purchase" className={fieldLabelClass}>
+                    Cuenta compra
+                  </Label>
+                  <Input
+                    id="type-purchase"
+                    value={form.purchaseAccount}
+                    onChange={(event) =>
+                      onFormFieldChange("purchaseAccount", event.target.value)
+                    }
+                    placeholder="Ej. 1100-001"
+                    className={controlClass}
+                    required
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="type-depreciation" className="text-xs font-semibold">
-                  Cuenta depreciación
-                </Label>
-                <Input
-                  id="type-depreciation"
-                  value={form.depreciationAccount}
-                  onChange={(e) =>
-                    onFormFieldChange("depreciationAccount", e.target.value)
-                  }
-                  placeholder="2000..."
-                  className="h-9 text-sm"
-                  required
-                />
+                <div className="space-y-0.5">
+                  <Label htmlFor="type-depreciation" className={fieldLabelClass}>
+                    Cuenta depreciacion
+                  </Label>
+                  <Input
+                    id="type-depreciation"
+                    value={form.depreciationAccount}
+                    onChange={(event) =>
+                      onFormFieldChange("depreciationAccount", event.target.value)
+                    }
+                    placeholder="Ej. 1200-001"
+                    className={controlClass}
+                    required
+                  />
+                </div>
               </div>
             </section>
 
-            {/* Sección Opcional: Estado */}
             {isEditMode && (
-              <section className="rounded-xl border border-emerald-200/50 bg-emerald-50/50 dark:border-emerald-800/30 dark:bg-emerald-950/20 p-4 transition-colors">
-                <div className="flex items-center justify-between gap-3">
+              <section className="space-y-1.5 border-t border-gray-100 pt-3">
+                <h3 className={sectionTitleClass}>Estado</h3>
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 px-3 py-2">
                   <div className="space-y-0.5">
-                    <Label className="text-sm font-semibold">
+                    <Label className="text-xs font-medium text-gray-600">
                       Estado en el sistema
                     </Label>
-                    <p className="text-[11px] text-muted-foreground">
-                      Activa o inactiva el acceso y visibilidad.
+                    <p className="text-[11px] text-gray-500">
+                      Activa o inactiva el tipo de activo.
                     </p>
                   </div>
                   <Switch
                     checked={form.status}
-                    onCheckedChange={(checked) =>
-                      onFormFieldChange("status", checked)
-                    }
+                    onCheckedChange={(checked) => onFormFieldChange("status", checked)}
                     className="data-[state=checked]:bg-emerald-500"
                   />
                 </div>
@@ -158,12 +155,14 @@ export function AssetTypeFormSheet({
           </form>
         </div>
 
-        <SheetFooter>
-          <div className="flex w-full items-center justify-end gap-2">
+        <DialogFooter className="border-t border-gray-100 bg-white px-4 py-2.5">
+          <div className="flex w-full items-center justify-center gap-2.5">
             <Button
-              variant="ghost"
+              type="button"
+              variant="outline"
               onClick={onCancel}
               disabled={isSaving}
+              className="h-9 min-w-32 rounded-xl border-gray-200 bg-white px-4 text-xs font-medium text-gray-600 shadow-none hover:bg-gray-50 hover:text-gray-700"
             >
               Cancelar
             </Button>
@@ -171,15 +170,14 @@ export function AssetTypeFormSheet({
               type="submit"
               form="asset-type-form"
               disabled={isSaving}
+              className="h-9 min-w-32 rounded-xl bg-emerald-600 px-5 text-xs font-medium text-white shadow-none transition-colors hover:bg-emerald-700"
             >
-              {isSaving ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
+              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEditMode ? "Guardar" : "Crear"}
             </Button>
           </div>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
