@@ -2,11 +2,11 @@
 
 import * as React from "react";
 import {
+  BookOpen,
   Boxes,
   Building2,
   Calculator,
   HomeIcon,
-  LayoutDashboard,
   Tag,
   Users,
 } from "lucide-react";
@@ -22,9 +22,9 @@ import {
 const data = {
   navMain: [
     {
-      title: "Dashboard",
+      title: "Asientos Contables",
       url: "/dashboard",
-      icon: LayoutDashboard,
+      icon: BookOpen,
     },
     {
       title: "Activos Fijos",
@@ -50,16 +50,6 @@ const data = {
       title: "Depreciaciones",
       url: "/dashboard/depreciation-calculations",
       icon: Calculator,
-      items: [
-        {
-          title: "Gestión",
-          url: "/dashboard/depreciation-calculations",
-        },
-        {
-          title: "Consulta Mensual",
-          url: "/dashboard/depreciation-calculations/consulta",
-        },
-      ],
     },
   ],
 };
